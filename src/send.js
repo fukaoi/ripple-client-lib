@@ -1,11 +1,7 @@
 const RippleAPI = require('ripple-lib').RippleAPI;
-const api = new RippleAPI({
-  server: 'wss://s.altnet.rippletest.net:51233'
-});
 
-api.connect();
 
-async function doPrepare() {
+async function doPrepare(api) {
   const sender = 'rsxSWHhd1MhstE8BPihxfZinj5WsnmLtPa';
   const preparedTx = await api.prepareTransaction({
     'TransactionType': 'Payment',
@@ -16,11 +12,18 @@ async function doPrepare() {
     'maxLedgerVersionOffset': 75 
   });
   const maxLedgerVersion = preparedTx.instructions.maxLedgerVersion;
-  console.log('Prepared transaction instructions', preparedTx.txJSON)
-  console.log('Transaction cost: ', preparedTx.instructions.fee, 'XRP')
-  console.log('Transaction expires after ledger: ', maxLedgerVersion)
   return preparedTx.txJSON;
 }
 
-let txJSON = doPrepare();
 
+async function main() {
+  const api = new RippleAPI({
+    server: 'wss://s.altnet.rippletest.net:51233'
+  });
+  await api.connect();
+  const txJSON = await doPrepare(api);
+  console.log('txJSON: ', txJSON);
+  await api.disconnect();
+}
+
+main()
