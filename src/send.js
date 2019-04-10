@@ -1,11 +1,12 @@
 const RippleAPI = require('ripple-lib').RippleAPI;
-
+const senderAddress = 'rsxSWHhd1MhstE8BPihxfZinj5WsnmLtPa';
+const senderSecret = 'ssmx3expkpmFBhLykNTWnaYr7D1eM';
 
 async function doPrepare(api) {
   const sender = 'rsxSWHhd1MhstE8BPihxfZinj5WsnmLtPa';
   const preparedTx = await api.prepareTransaction({
     'TransactionType': 'Payment',
-    'Account': sender, 
+    'Account': senderAddress, 
     'Amount': api.xrpToDrops('1'),
     'Destination': 'rMLA96QSnJi35zoTgopfWRtyyrxhcgpq1z'
   }, {
@@ -15,6 +16,11 @@ async function doPrepare(api) {
   return preparedTx.txJSON;
 }
 
+async function doSubmit(api, txBlob) {
+  const latestLedgerVersion = await api.getLedgerVersion();
+  console.log('latestLedgerVersion: ', latestLedgerVersion);
+  return await api.submit(txBlob)
+}
 
 async function main() {
   const api = new RippleAPI({
@@ -23,7 +29,13 @@ async function main() {
   await api.connect();
   const txJSON = await doPrepare(api);
   console.log('txJSON: ', txJSON);
-  await api.disconnect();
+  const response = api.sign(txJSON, senderSecret);
+  console.log('response: ', response);
+  const txBlob = response.signedTransaction
+  console.log('Signed blob', txBlob);
+  const result = await doSubmit(api, txBlob);
+  console.log('result: ', result);
+  api.disconnect();
 }
 
 main()
