@@ -11,7 +11,7 @@ const myOrder = {
   'direction': 'buy',
   'quantity': {
     'currency': 'F00',
-    'conterparty': 'rUpy3eEg8rqjqfUoLeBnZkscbKbFsKXC3v',
+    'conterparty': 'rMLA96QSnJi35zoTgopfWRtyyrxhcgpq1z',    
     'value': '100'
   },
   'totalPrice': {
@@ -21,7 +21,9 @@ const myOrder = {
 }
 
 const INTERVAL = 1000;
-const api = new RippleAPI({server: 'wss://s2.ripple.com'});
+const api = new RippleAPI({
+  server: 'wss://s.altnet.rippletest.net:51233'
+});
 const ledgerOffset = 5;
 const myInstructions = {maxLedgerVersionOffset: ledgerOffset};
 
