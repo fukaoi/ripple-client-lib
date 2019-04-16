@@ -6,10 +6,10 @@ async function connect() {
   await api.connect()
 }
 
-const multiSignAddress = {
+const masterAddress = {
   address: 'raNMGRcQ7McWzXYL7LisGDPH5D5Qrtoprp',
   secret: 'ssBKGd1TqzG1G1MrVMEw262ao98Sq',
-  sequence: async(addr) => {
+  sequence: async (addr) => {
     const info = await api.getAccountInfo(addr)
     return info.sequence
   }
@@ -54,21 +54,34 @@ const signerEntries = [
   },
 ]
 
-const setupMultisig = (multiSignAddress, signers, quorum) => {
+// fee test
+// fee=12...succes 
+// fee=5....succes  
+// fee=1....succes  
+// fee=0....succes  
+// Delete Fee colum....Big Number error
+
+const fee = '0'
+const setupMultisig = async (multiSignAddress, signers, quorum) => {
   const txJson = {
     'Flags': 0,
-    'TransactionType': 'SingnerListSet',
+    'TransactionType': 'SignerListSet',
     'Account': multiSignAddress.address,
-    'Sequence': multiSignAddress.sequence(multiSignAddress.address),
-    'Fee': '12',
-    'SingnerQuorum': quorum,
+    'Sequence': await multiSignAddress.sequence(multiSignAddress.address),
+    'Fee': fee,
+    'SignerQuorum': quorum,
     'SignerEntries': signers
   }    
+  return txJson;
 }
 
 async function main() {
   await connect()
-  await setupMultisig(multiSignAddress, signerEntries, 2)
+  const txJson = await setupMultisig(masterAddress, signerEntries, 2)
+  const signedTx = await api.sign(JSON.stringify(txJson), masterAddress.secret)
+  console.log("signedTx:\n", signedTx)
+  const receipt = await api.submit(signedTx.signedTransaction)
+  console.log("receipt\n", receipt)
 }
 
 main().then(res => {
@@ -80,3 +93,4 @@ main().then(res => {
   console.error(error);
   api.disconnect();
 });
+
