@@ -1,13 +1,7 @@
 const RippleAPI = require('ripple-lib').RippleAPI;
 
-
 const master = 'rsxSWHhd1MhstE8BPihxfZinj5WsnmLtPa';   //マスターキー
 const masterSecret = 'ssmx3expkpmFBhLykNTWnaYr7D1eM';
-
-const reg1 = 'rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS';     //レギュラーキー
-const reg2 = 'rpJ3t4nqjbSaTRJ8RKMwxg5ajw8EdwnxL7';
-const regSecret1 = 'ssJaD4Gq2JucUJwjQm8cRafkTvVos';
-const regSecret2 = 'ssJjX6xNmpMdqyifkNXNrqgfSqhuQ';
 
 const signers = {
   treshold: 2,
@@ -17,29 +11,58 @@ const signers = {
   ]
 };
 
-async function setUp(api) {
-  const instructions = {maxLedgerVersionOffset: 10};
-  const multisignInstructions = Object.assign({}, instructions, {signersCount: 2});
-  api.prepareSettings(master, multisignInstructions)
-    .then(prepared => {
-      const signed1 = api.sign(prepared.txJSON, regSecret1, {signAs: reg1});
-      const signed2 = api.sign(prepared.txJSON, regSecret2, {signAs: reg2});
-      const combined = api.combine([
-        signed1.signedTransaction, signed2.signedTransaction
-      ]);
-      api.submit(combined.signedTransaction)
-        .then(res => acceptLedger(api).then(() => response))
-        .catch(error => {console.error(error.message)})
-    })
+let api;
+async function connect() {
+  api = new RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})  
+  await api.connect()
+}
+
+const multiSignAddress = {
+  address: '',
+  secret: '',
+  sequence: async(addr) => {
+    const info = api.getAccountInfo(addr)
+    return info.sequence
+  }
+}
+
+const signerAddresses = [
+  {
+    address: 'rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS',
+    secret: 'ssJaD4Gq2JucUJwjQm8cRafkTvVos'
+  },
+  {
+    address: 'rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS',
+    secret: 'ssJjX6xNmpMdqyifkNXNrqgfSqhuQ'
+  },
+  {
+    address: 'rfQcZ4ia3HxFzr7m8wibceXvHBfRr94iU6',
+    secret: 'spzAGSGjHVqLrbseewsivtG1ah8GP'
+  }
+]
+
+const setupMultisig = (multiSignAddress, signers, quorum) => {
+  const txJson = {
+    'Flags': 0,
+    'TransactionType': 'SingnerListSet',
+    'Account': multiSignAddress.address,
+    'Sequence': await multiSignAddress.sequence(multiSignAddress.address),
+    'Fee': '12',
+    'SingnerQuorum': quorum,
+    'SignerEntries': signers
+  }    
 }
 
 async function main() {
-  const api = new RippleAPI({
-    server: 'wss://s.altnet.rippletest.net:51233'
-  });
-  await api.connect();
-  await setUp(api);
+  await setupMultisig(multiSignAddress, SignerEntries, 2)
 }
 
-main();
-
+main().then(res => {
+  console.log('## Success ##');
+  console.log(res);
+  api.disconnect();
+}).catch(error => {
+  console.log('## Error ##');
+  console.error(error);
+  api.disconnect();
+});
