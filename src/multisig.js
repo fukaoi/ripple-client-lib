@@ -1,16 +1,5 @@
 const RippleAPI = require('ripple-lib').RippleAPI;
 
-const master = 'rsxSWHhd1MhstE8BPihxfZinj5WsnmLtPa';   //マスターキー
-const masterSecret = 'ssmx3expkpmFBhLykNTWnaYr7D1eM';
-
-const signers = {
-  treshold: 2,
-  weigths: [
-    {address: reg1, weigthts: 1},
-    {address: reg2, weigthts: 1},
-  ]
-};
-
 let api;
 async function connect() {
   api = new RippleAPI({server: 'wss://s.altnet.rippletest.net:51233'})  
@@ -18,10 +7,10 @@ async function connect() {
 }
 
 const multiSignAddress = {
-  address: '',
-  secret: '',
+  address: 'raNMGRcQ7McWzXYL7LisGDPH5D5Qrtoprp',
+  secret: 'ssBKGd1TqzG1G1MrVMEw262ao98Sq',
   sequence: async(addr) => {
-    const info = api.getAccountInfo(addr)
+    const info = await api.getAccountInfo(addr)
     return info.sequence
   }
 }
@@ -32,8 +21,8 @@ const signerAddresses = [
     secret: 'ssJaD4Gq2JucUJwjQm8cRafkTvVos'
   },
   {
-    address: 'rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS',
-    secret: 'ssJjX6xNmpMdqyifkNXNrqgfSqhuQ'
+    address: 'rLbTw2MioZ4spnjvQr1vTRDHaURSxtJGFK',
+    secret: 'sskWD5YudzgV8c2PLMnEiTVWZfWty'
   },
   {
     address: 'rfQcZ4ia3HxFzr7m8wibceXvHBfRr94iU6',
@@ -41,12 +30,36 @@ const signerAddresses = [
   }
 ]
 
+const signerEntries = [
+  {
+    'SignerEntry': {
+      'Account': 'rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS',
+      'SignerWeight': 1
+    }
+    
+  },
+  {
+    'SignerEntry': {
+      'Account': 'rLbTw2MioZ4spnjvQr1vTRDHaURSxtJGFK',
+      'SignerWeight': 1
+    }
+    
+  },
+  {
+    'SignerEntry': {
+      'Account': 'rfQcZ4ia3HxFzr7m8wibceXvHBfRr94iU6',
+      'SignerWeight': 1
+    }
+    
+  },
+]
+
 const setupMultisig = (multiSignAddress, signers, quorum) => {
   const txJson = {
     'Flags': 0,
     'TransactionType': 'SingnerListSet',
     'Account': multiSignAddress.address,
-    'Sequence': await multiSignAddress.sequence(multiSignAddress.address),
+    'Sequence': multiSignAddress.sequence(multiSignAddress.address),
     'Fee': '12',
     'SingnerQuorum': quorum,
     'SignerEntries': signers
@@ -54,7 +67,8 @@ const setupMultisig = (multiSignAddress, signers, quorum) => {
 }
 
 async function main() {
-  await setupMultisig(multiSignAddress, SignerEntries, 2)
+  await connect()
+  await setupMultisig(multiSignAddress, signerEntries, 2)
 }
 
 main().then(res => {
