@@ -56,12 +56,14 @@ const signerEntries = [
 
 // fee test
 // fee=12...succes 
-// fee=5....succes  
-// fee=1....succes  
-// fee=0....succes  
+// fee=10...succes 
+// fee=8... failure:engine_result_code: -394,
+// fee=5....failure:engine_result_code: -394,
+// fee=1....failure:engine_result_code: -394,
+// fee=0....failure:engine_result_code: -394,
 // Delete Fee colum....Big Number error
 
-const fee = '0'
+const fee = '8'
 const setupMultisig = async (multiSignAddress, signers, quorum) => {
   const txJson = {
     'Flags': 0,
