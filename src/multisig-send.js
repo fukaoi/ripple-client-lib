@@ -5,7 +5,8 @@ const RippleAPI = require('ripple-lib').RippleAPI;
     server: 'wss://s.altnet.rippletest.net:51233' // Public rippled server
   })
   await api.connect()
-
+  const fee = await api.getFee()
+  console.log("fee:", fee)
   const withdrawingUser = {
     Address: "rsGPNkSLt36BDLMgPAYKifFvCphQJZ2qJw"
   }
@@ -33,15 +34,17 @@ const RippleAPI = require('ripple-lib').RippleAPI;
   const txJson = {
     source: {
       address: multiSignAddress.Address,
-      amount: {value: "1000000000", currency: 'drops'}
+      amount: {value: "100000", currency: 'drops'},
+      tag: 1234,
     },
     destination: {
       address: withdrawingUser.Address,
       minAmount: {
-        value: '' + "1000000000",
+        value: '' + "100000",
         currency: 'drops'
-      }
-    }
+      },
+      tag: 7890,
+    },
   }
 
   //Fee 
@@ -54,6 +57,8 @@ const RippleAPI = require('ripple-lib').RippleAPI;
     multiSignAddress.Address,
     txJson,
     {
+      fee: '0.00001',  // fee * signed number // fee:10 drops success
+      // fee: '0.000009',  // fee * signed number // fee:9 drops failed
       sequence: multisigSequence,
       signersCount: 2
     })

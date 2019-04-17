@@ -8,9 +8,10 @@ async function doPrepare(api) {
     'TransactionType': 'Payment',
     'Account': senderAddress, 
     'Amount': api.xrpToDrops('1'),
-    'Destination': 'rMLA96QSnJi35zoTgopfWRtyyrxhcgpq1z'
+    'Destination': 'rMLA96QSnJi35zoTgopfWRtyyrxhcgpq1z',
   }, {
-    'maxLedgerVersionOffset': 75 
+    'maxLedgerVersionOffset': 75,
+    'fee': '0.000009'  // 10drops: success, 9dropbs: failed
   });
   const maxLedgerVersion = preparedTx.instructions.maxLedgerVersion;
   return preparedTx.txJSON;
