@@ -63,7 +63,7 @@ const signerEntries = [
 // fee=0....failure:engine_result_code: -394,
 // Delete Fee colum....Big Number error
 
-const fee = '8'
+const fee = '10'
 const setupMultisig = async (multiSignAddress, signers, quorum) => {
   const txJson = {
     'Flags': 0,
