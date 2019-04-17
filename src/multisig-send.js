@@ -44,6 +44,12 @@ const RippleAPI = require('ripple-lib').RippleAPI;
     }
   }
 
+  //Fee 
+  // quorum:1  12 * (1 + 1) => 24 // demerit single transaction
+  // quorum:3  12 * (1 + 3) => 48
+  // quorum:3  12 * (1 + 3) => 48
+  // quorum:1 にしても、combine数に影響してしまうので、combinedを変更すべき
+
   const payment  = await api.preparePayment(
     multiSignAddress.Address,
     txJson,
@@ -61,7 +67,11 @@ const RippleAPI = require('ripple-lib').RippleAPI;
     signerAddresses[1].secret,
     {signAs: signerAddresses[1].address}
   )
-  console.log("sig1", sig1)
+  const sig3 = api.sign(
+    payment.txJSON,
+    signerAddresses[2].secret,
+    {signAs: signerAddresses[2].address}
+  )
   const combinedTx = api.combine([sig1.signedTransaction, sig2.signedTransaction])
   const receipt  = await api.submit(combinedTx.signedTransaction)
   console.log(receipt)
