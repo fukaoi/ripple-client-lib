@@ -15,20 +15,20 @@ const masterAddress = {
   }
 }
 
-const signerAddresses = [
-  {
-    address: 'rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS',
-    secret: 'ssJaD4Gq2JucUJwjQm8cRafkTvVos'
-  },
-  {
-    address: 'rLbTw2MioZ4spnjvQr1vTRDHaURSxtJGFK',
-    secret: 'sskWD5YudzgV8c2PLMnEiTVWZfWty'
-  },
-  {
-    address: 'rfQcZ4ia3HxFzr7m8wibceXvHBfRr94iU6',
-    secret: 'spzAGSGjHVqLrbseewsivtG1ah8GP'
-  }
-]
+// const signerAddresses = [
+  // {
+    // address: 'rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS',
+    // secret: 'ssJaD4Gq2JucUJwjQm8cRafkTvVos'
+  // },
+  // {
+    // address: 'rLbTw2MioZ4spnjvQr1vTRDHaURSxtJGFK',
+    // secret: 'sskWD5YudzgV8c2PLMnEiTVWZfWty'
+  // },
+  // {
+    // address: 'rfQcZ4ia3HxFzr7m8wibceXvHBfRr94iU6',
+    // secret: 'spzAGSGjHVqLrbseewsivtG1ah8GP'
+  // }
+// ]
 
 const signerEntries = [
   {
