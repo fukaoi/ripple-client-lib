@@ -39,12 +39,14 @@ const RippleAPI = require('ripple-lib').RippleAPI;
     },
     destination: {
       address: withdrawingUser.Address,
-      minAmount: {
-        value: '' + "100000",
-        currency: 'drops'
-      },
+      minAmount: { value: '' + "100000", currency: 'drops' },
       tag: 7890,
-    },
+    },  
+    memos: [{
+      "type": "test",
+      "format": "text/plain",  
+      "data": "test"
+    }]  
   }
 
   //Fee 

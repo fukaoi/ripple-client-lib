@@ -72,7 +72,7 @@ const setupMultisig = async (multiSignAddress, signers, quorum) => {
     'Sequence': await multiSignAddress.sequence(multiSignAddress.address),
     'Fee': fee,
     'SignerQuorum': quorum,
-    'SignerEntries': signers
+    'SignerEntries': signers,
   }    
   return txJson;
 }
