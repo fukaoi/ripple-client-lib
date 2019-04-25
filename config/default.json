@@ -1,7 +1,7 @@
 {
   "master_key":{
-    "address":"xxxxxxxx",
-    "secret" : ""
+    "address":"raNMGRcQ7McWzXYL7LisGDPH5D5Qrtoprp",
+    "secret" : "ssBKGd1TqzG1G1MrVMEw262ao98Sq"
   },
 
   "regular_key": [
@@ -16,5 +16,25 @@
     "secret" :""
   }],
 
-  "server":"wss://s.altnet.rippletest.net:51233" 
+  "server":"wss://s.altnet.rippletest.net:51233",
+
+  "signer_entries":[
+  {
+    "signers":{
+      "address":"rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS",
+      "weight":1
+    }
+  },
+  {
+    "signers":{
+      "address":"rLbTw2MioZ4spnjvQr1vTRDHaURSxtJGFK",
+      "weight":1
+    }
+  },
+  {
+    "signers":{
+      "address":"rfQcZ4ia3HxFzr7m8wibceXvHBfRr94iU6",
+      "weight": 1
+    }
+  }]
 }
