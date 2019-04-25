@@ -1,10 +1,9 @@
 const RippleAPI = require('ripple-lib').RippleAPI;
-const config = require('config');
 
 
 class GenerateAddress {
-  constructor() {
-    this.api = new RippleAPI({server: config.get('server')});
+  constructor(srv) {
+    this.api = new RippleAPI({server: srv});
   } 
 
   async connect() {
@@ -24,6 +23,7 @@ class GenerateAddress {
   }
 }
 
-new GenerateAddress().main();
+const server = process.env.SERVER;
+new GenerateAddress(server).main();
 
 
