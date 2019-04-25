@@ -19,7 +19,6 @@ class GenerateAddress {
     } catch(e) {
       console.error(e)
     } finally {
-      console.log('finalize');
       this.api.disconnect();
     }
   }
