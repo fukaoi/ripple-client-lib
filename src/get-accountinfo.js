@@ -8,12 +8,5 @@ async function main(){
   return await api.getAccountInfo(myAddress);
 }
 
-async function main2() {
-  const data = await main()
-  console.log(data);
-  return data;
-}
 
-
-console.log(main2())
-
+main().then(accountInfo => console.log(accountInfo))
