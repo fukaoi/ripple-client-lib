@@ -1,0 +1,20 @@
+{
+  "master_key":{
+    "address":"xxxxxxxx",
+    "secret" : ""
+  },
+
+  "regular_key": [
+  {
+    "address":"",
+    "secret" :""
+  },{
+    "address":"",
+    "secret" :""
+  },{
+    "address":"",
+    "secret" :""
+  }],
+
+  "server":"wss://s.altnet.rippletest.net:51233" 
+}
