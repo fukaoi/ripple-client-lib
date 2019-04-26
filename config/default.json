@@ -5,7 +5,7 @@
   },
 
   "regular_key": [
-  { "address":"rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS",
+  {    "address":"rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS",
       "secret": "ssJaD4Gq2JucUJwjQm8cRafkTvVos"
   },
   {
@@ -21,23 +21,23 @@
 
   "signer_entries":[
   {
-    "signers":{
-      "address":"rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS",
-      "weight":1
+    "SignerEntry":{
+      "Account":"rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS",
+      "SignerWeight":1
     }
   },
   {
-    "signers":{
-      "address":"rLbTw2MioZ4spnjvQr1vTRDHaURSxtJGFK",
-      "weight":1
+    "SignerEntry":{
+      "Account":"rLbTw2MioZ4spnjvQr1vTRDHaURSxtJGFK",
+      "SignerWeight":1
     }
   },
   {
-    "signers":{
-      "address":"rfQcZ4ia3HxFzr7m8wibceXvHBfRr94iU6",
-      "weight": 1
+    "SignerEntry":{
+      "Account":"rfQcZ4ia3HxFzr7m8wibceXvHBfRr94iU6",
+      "SignerWeight":1
     }
   }],
 
-  "quorum" : 2
+  "quorum" : "2"
 }

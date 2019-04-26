@@ -13,29 +13,31 @@ class CreateSignerList {
   }
 
   async getSequence(address) {
-    return await this.api.getAccountInfo(address)
+    const account_info = await this.api.getAccountInfo(address);
+    return account_info.sequence;
   }
 
   async setupMultisig(quorum, fee) {
-    const seq = await this.getSequence(); 
-    const txJson = {
+    const seq = await this.getSequence(this.master_key.address); 
+    const txjson = {
       'Flags': 0,
       'TransactionType': 'SignerListSet',
       'Account': this.master_key.address,
       'Sequence': seq,
-      'Fee': this.fee,
-      'SignerQuorum': this.quorum,
-      'SignerEntries': this.signers,
+      'Fee': fee,
+      'SignerQuorum': quorum,
+      'SignerEntries': this.signer_entries,
     }    
-    return txJson;
+    return txjson;
   }
 
   async main(quorum, fee) {
     try {
       await this.connect();
-      const txJson =   await setupMultisig(quorum, fee)
-      const signedTx = await api.sign(JSON.stringify(txJson), master_key.secret)
-      const receipt =  await api.submit(signedTx.signedTransaction)
+      const txjson =   await this.setupMultisig(quorum, fee);
+      console.log(txjson);
+      const signedTx = await this.api.sign(JSON.stringify(txjson), this.master_key.secret);
+      const receipt =  await this.api.submit(signedTx.signedTransaction)
       console.log("receipt\n", receipt)
     } catch(e) {
       console.error(e);
@@ -45,10 +47,14 @@ class CreateSignerList {
   }
 }
 
+const srv = process.env.SERVER;
 const quorum = process.env.QUORUM;
-const fee = 10;
+const master_key = JSON.parse(process.env.MASTER_KEY);
+const signer_entries = JSON.parse(process.env.SIGNER_ENTRIES);
+let fee = '10';
 if (process.env.FEE != undefined) {
-  fee = process.env.FEE    
-}
+  fee = process.env.FEE
+}    
 
-new CreateSignerList().main(quorum, fee);
+const list = new CreateSignerList(srv, master_key, signer_entries);
+list.main(quorum, fee);
