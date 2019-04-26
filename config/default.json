@@ -4,7 +4,7 @@
     "secret" : "ssBKGd1TqzG1G1MrVMEw262ao98Sq"
   },
 
-  "regular_key": [
+  "regular_keys": [
   {    "address":"rE4tPhwXD9PQJ1pZFrCbJphTfVKwq5aTwS",
       "secret": "ssJaD4Gq2JucUJwjQm8cRafkTvVos"
   },
@@ -39,5 +39,8 @@
     }
   }],
 
-  "quorum" : "2"
+  "quorum" : "2",
+  "fee" : "10",
+
+  "to": "raNMGRcQ7McWzXYL7LisGDPH5D5Qrtoprp" 
 }

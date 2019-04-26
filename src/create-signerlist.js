@@ -49,12 +49,9 @@ class CreateSignerList {
 
 const srv = process.env.SERVER;
 const quorum = process.env.QUORUM;
+const fee = process.env.FEE;
 const master_key = JSON.parse(process.env.MASTER_KEY);
 const signer_entries = JSON.parse(process.env.SIGNER_ENTRIES);
-let fee = '10';
-if (process.env.FEE != undefined) {
-  fee = process.env.FEE
-}    
 
 const list = new CreateSignerList(srv, master_key, signer_entries);
 list.main(quorum, fee);
