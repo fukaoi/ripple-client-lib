@@ -39,8 +39,8 @@
     }
   }],
 
-  "quorum" : "2",
-  "fee" : "10",
-
-  "to": "raNMGRcQ7McWzXYL7LisGDPH5D5Qrtoprp" 
+  "quorum" : 2,
+  "fee" : "0.00001",
+  "to": "rsGPNkSLt36BDLMgPAYKifFvCphQJZ2qJw",
+  "amount": "0.0001" 
 }
