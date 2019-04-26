@@ -54,10 +54,18 @@ class SendMultisig {
 
   setupSignerSiggning(signers = [], payment_json) {
     let signeds = [];
-    signers.forEach((signer) => {
-      let signed = this.api.sign(payment_json, signer.secret, {signAs: signer.address}); 
+    for(let i = 0; i < this.quorum; i++) {
+      let signed = this.api.sign(
+        payment_json, 
+        signers[i].secret, 
+        {signAs: signers[i].address}
+      ); 
       signeds.push(signed);
-    });
+    }
+    // signers.forEach((signer) => {
+      // let signed = this.api.sign(payment_json, signer.secret, {signAs: signer.address}); 
+      // signeds.push(signed);
+    // });
     return signeds;
   }
 
