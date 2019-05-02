@@ -15,10 +15,11 @@ test('api connect', async () => {
   sleep(1000); //prevent timeout 
 });
 
-test('No set param', () => {
-  expect(() => {
-    new Api('');
-  }).toThrow();
+test('api connect no constructor param', () => {
+  api = await new Api();
+  const connected = await api.connect();
+  expect(connected).toBeTruthy();
+  sleep(1000); //prevent timeout 
 });
 
 function sleep(waitMsec) {

@@ -1,10 +1,19 @@
 const RippleAPI = require('ripple-lib').RippleAPI;
 
+
+
 module.exports = class Api {
+  const TEST_SERVER = 'wss://s.altnet.rippletest.net:51233';
+  const SERVER      = 'wss://s2.ripple.com:51234';
+
   constructor(srv) {
     if (!srv) {
-      throw new Error("No set params: srv");
-    }
+      if (process.env.NODE_ENV == 'production') {
+        srv = SERVER;
+      } else {
+        srv = TEST_SERVER;   
+      }
+    } 
     this.api = new RippleAPI({server: srv});
   }
 
