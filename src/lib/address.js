@@ -1,4 +1,9 @@
-module.exports = class Address {
+let Api = require('./api');
+
+module.exports = class Address extends Api{
+  constructor() {
+    super(); 
+  }
 
   async getSequence(address) {
     const account_info = await this.api.getAccountInfo(address);
