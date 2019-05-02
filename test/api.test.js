@@ -12,5 +12,17 @@ test('api connect', async () => {
   api = await new Api(srv);
   const connected = await api.connect();
   expect(connected).toBeTruthy();
+  sleep(1000); //prevent timeout 
 });
 
+test('No set param', () => {
+  expect(() => {
+    new Api('');
+  }).toThrow();
+});
+
+function sleep(waitMsec) {
+  var startMsec = new Date();
+  while (new Date() - startMsec < waitMsec);
+}
+ 

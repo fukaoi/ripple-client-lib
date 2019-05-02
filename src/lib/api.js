@@ -2,6 +2,9 @@ const RippleAPI = require('ripple-lib').RippleAPI;
 
 module.exports = class Api {
   constructor(srv) {
+    if (!srv) {
+      throw new Error("No set params: srv");
+    }
     this.api = new RippleAPI({server: srv});
   }
 
