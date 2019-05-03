@@ -22,8 +22,6 @@ module.exports = class Client {
       return true;
     } catch(e) {
       console.error(e);
-    } finally {
-      this.disconnect(); 
     }
   }
 
