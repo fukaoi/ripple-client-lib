@@ -1,20 +1,33 @@
 const config = require('config');
 const Address = require('../src/lib/address')
 
-test('Generate new address', async () => {
-  const address = new Address();
-  const created = await address.newAddress();
-  console.log(created);
+
+let address;
+
+afterEach(() => {
+  console.log('## Call after method. ##');
+  address.disconnect();
 });
 
-// test('No set param', () => {
-  // expect(() => {
-    // new Api('');
-  // }).toThrow();
-// });
+test('Generate new address', async () => {
+  address = new Address();
+  const created = await address.newAddress();
+  expect(created.secret).not.toBeUndefined();
+  expect(created.address).not.toBeUndefined();
+});
 
-// function sleep(waitMsec) {
-  // var startMsec = new Date();
-  // while (new Date() - startMsec < waitMsec);
-// }
+
+test('Get seq number', async () => {
+  address = new Address();
+  const created = address.newAddress();
+  console.log(created);
+  // address.getSequence(created.address);
+});
+
+test('No set param', () => {
+  expect(() => {
+    new Client().getSequence('');
+  }).toThrow();
+});
+
  

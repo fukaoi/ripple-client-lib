@@ -3,7 +3,6 @@ let Client = require('./client');
 module.exports = class Address extends Client{
   constructor(srv = '') {
     super(srv); 
-    this.connect();
   }
 
   async getSequence(address) { 

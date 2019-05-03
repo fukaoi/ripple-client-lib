@@ -22,8 +22,4 @@ test('Client connect no constructor param', async () => {
   expect(connected).toBeTruthy();
 });
 
-function sleep(waitMsec) {
-  var startMsec = new Date();
-  while (new Date() - startMsec < waitMsec);
-}
  
