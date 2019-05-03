@@ -11,6 +11,7 @@ afterEach(() => {
 
 test('Generate new address', async () => {
   address = new Address();
+  await address.connect();
   const created = await address.newAddress();
   expect(created.secret).not.toBeUndefined();
   expect(created.address).not.toBeUndefined();
@@ -19,14 +20,17 @@ test('Generate new address', async () => {
 
 test('Get seq number', async () => {
   address = new Address();
-  const created = address.newAddress();
-  console.log(created);
-  // address.getSequence(created.address);
+  await address.connect();
+  const created = await address.newAddress();
+  const seq = await address.getSequence(created.address);
+  console.log(seq);
 });
 
 test('No set param', () => {
-  expect(() => {
-    new Client().getSequence('');
+  expect(async () => {
+    address = new Address();
+    await address.connect();
+    await address.getSequence('');
   }).toThrow();
 });
 

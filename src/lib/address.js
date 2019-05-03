@@ -6,7 +6,7 @@ module.exports = class Address extends Client{
   }
 
   async getSequence(address) { 
-    if (!address) {
+    if (address == '') {
       throw new Error('No set address');
     }
     const account_info = await this.api.getAccountInfo(address);

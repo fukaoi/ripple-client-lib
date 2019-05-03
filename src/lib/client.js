@@ -17,21 +17,11 @@ module.exports = class Client {
   }
 
   async connect() {
-    try {
-      await this.api.connect();
-      return true;
-    } catch(e) {
-      console.error(e);
-    }
+    await this.api.connect();
   }
 
   async disconnect() {
-    try {
-      await this.api.disconnect();
-      return true; 
-    } catch(e) {
-      console.error(e); 
-    }
+    await this.api.disconnect();
   }
 }
 
