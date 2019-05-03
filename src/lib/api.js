@@ -1,10 +1,9 @@
 const RippleAPI = require('ripple-lib').RippleAPI;
 
-
+const TEST_SERVER = 'wss://s.altnet.rippletest.net:51233';
+const SERVER      = 'wss://s2.ripple.com:51234';
 
 module.exports = class Api {
-  const TEST_SERVER = 'wss://s.altnet.rippletest.net:51233';
-  const SERVER      = 'wss://s2.ripple.com:51234';
 
   constructor(srv) {
     if (!srv) {
@@ -23,6 +22,8 @@ module.exports = class Api {
       return true;
     } catch(e) {
       console.error(e);
+    } finally {
+      this.disconnect(); 
     }
   }
 

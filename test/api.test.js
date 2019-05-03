@@ -3,20 +3,16 @@ const Api = require('../src/lib/api')
 
 let api;
 
-afterAll(() => {
-  api.disconnect();  
-});
-
 test('api connect', async () => {
   const srv = config.get('server');
-  api = await new Api(srv);
+  api = new Api(srv);
   const connected = await api.connect();
   expect(connected).toBeTruthy();
   sleep(1000); //prevent timeout 
 });
 
-test('api connect no constructor param', () => {
-  api = await new Api();
+test('api connect no constructor param', async () => {
+  api = new Api();
   const connected = await api.connect();
   expect(connected).toBeTruthy();
   sleep(1000); //prevent timeout 

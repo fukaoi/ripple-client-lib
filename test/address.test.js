@@ -7,11 +7,9 @@ afterAll(() => {
   // api.disconnect();  
 });
 
-test('api connect', async () => {
-  const srv = config.get('server');
+test('Generate new address', async () => {
   address = new Address();
-  // const connected = await api.connect();
-  // expect(connected).toBeTruthy();
+  console.log(address.api);
   // sleep(1000); //prevent timeout 
 });
 
