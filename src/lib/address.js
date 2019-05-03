@@ -1,8 +1,9 @@
-let Api = require('./api');
+let Client = require('./client');
 
-module.exports = class Address extends Api{
-  constructor(srv = '') {
+module.exports = class Address extends Client{
+  async constructor(srv = '') {
     super(srv); 
+    await this.connect();
   }
 
   async getSequence(address) { 
@@ -14,6 +15,8 @@ module.exports = class Address extends Api{
   }
 
   async newAddress() {
-    return await this.api.generateAddress();
+    console.log(this.api);
+    const created = await this.api.generateAddress();
+    return created;
   }
 }

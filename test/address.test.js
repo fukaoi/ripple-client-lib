@@ -1,16 +1,10 @@
 const config = require('config');
 const Address = require('../src/lib/address')
 
-let address;
-
-afterAll(() => {
-  // api.disconnect();  
-});
-
 test('Generate new address', async () => {
-  address = new Address();
-  console.log(address.api);
-  // sleep(1000); //prevent timeout 
+  const address = new Address();
+  const created = await address.newAddress();
+  console.log(created);
 });
 
 // test('No set param', () => {
