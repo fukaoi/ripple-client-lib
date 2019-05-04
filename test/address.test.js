@@ -3,6 +3,7 @@ const Address = require('../src/lib/address')
 
 
 let address;
+let faucetAddress;
 
 afterEach(() => {
   console.log('## Call after method. ##');
@@ -12,10 +13,8 @@ afterEach(() => {
 beforeAll(async () => {
   address = new Address();
   const res = JSON.parse(await address.generateFaucet()); 
-  console.log(res.account.address);
-  console.log(res.account.secret);
-  console.log(res.balance);
-  // console.log(res.address, res.secret, res.balance);
+  console.log(res.account.address, res.account.secret, res.balance);
+  faucetAddress = res.account.address;
 });
 
 test('Generate new address', async () => {
@@ -30,8 +29,7 @@ test('Generate new address', async () => {
 test('Get seq number', async () => {
   address = new Address();
   await address.connect();
-  const created = await address.newAddress();
-  const seq = await address.getSequence(created.address);
+  const seq = await address.getSequence(faucetAddress);
   console.log(seq);
 });
 
