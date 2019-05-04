@@ -9,6 +9,15 @@ afterEach(() => {
   address.disconnect();
 });
 
+beforeAll(async () => {
+  address = new Address();
+  const res = JSON.parse(await address.generateFaucet()); 
+  console.log(res.account.address);
+  console.log(res.account.secret);
+  console.log(res.balance);
+  // console.log(res.address, res.secret, res.balance);
+});
+
 test('Generate new address', async () => {
   address = new Address();
   await address.connect();
