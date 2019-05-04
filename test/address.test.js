@@ -15,6 +15,7 @@ beforeAll(async () => {
   const res = JSON.parse(await address.generateFaucet()); 
   console.log(res.account.address, res.account.secret, res.balance);
   faucetAddress = res.account.address;
+  sleep(5000); 
 });
 
 test('Generate new address', async () => {
@@ -30,7 +31,7 @@ test('Get seq number', async () => {
   address = new Address();
   await address.connect();
   const seq = await address.getSequence(faucetAddress);
-  console.log(seq);
+  await expect(seq).toBeGreaterThan(0);
 });
 
 test('No set param', async () => {
@@ -39,6 +40,9 @@ test('No set param', async () => {
   await expect(res).rejects.toThrow('No set address');
 });
 
-// todo: faucet
-//curl https://faucet.altnet.rippletest.net/accounts -X POST
- 
+
+function sleep(waitMsec) {
+  let startMsec = new Date();
+  while (new Date() - startMsec < waitMsec);
+}
+
