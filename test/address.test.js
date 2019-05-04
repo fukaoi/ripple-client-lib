@@ -26,12 +26,12 @@ test('Get seq number', async () => {
   console.log(seq);
 });
 
-test('No set param', () => {
-  expect(async () => {
-    address = new Address();
-    await address.connect();
-    await address.getSequence('');
-  }).toThrow();
+test('No set param', async () => {
+  address = new Address();
+  const res = address.getSequence('');
+  await expect(res).rejects.toThrow('No set address');
 });
 
+// todo: faucet
+//curl https://faucet.altnet.rippletest.net/accounts -X POST
  
