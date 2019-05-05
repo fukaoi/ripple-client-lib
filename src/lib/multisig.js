@@ -1,9 +1,11 @@
-module.exports = class Multisig {
+const Client = require('./client');
+
+module.exports = class Multisig extends Client {
   constructor(masterAddress) {
     this.masterAddress = masterAddress;
   }
 
-  async setupMultisig(quorum, fee, seq) {
+  async setupMultisig(quorum, fee, seq, signerEngtries) {
     const txjson = {
       'Flags': 0,
       'TransactionType': 'SignerListSet',
@@ -11,21 +13,21 @@ module.exports = class Multisig {
       'Sequence': seq,
       'Fee': fee,
       'SignerQuorum': quorum,
-      'SignerEntries': this.signer_entries,
+      'SignerEntries': SignerEntries,
     }    
     return txjson;
   }
 
-  setupSignerList() {
+  setupSignerList(signers = [{address:'', weight: 0}]) {
   
   }
 
-  setupSignerSiggning(signers = [], payment_json) {
+  setupSignerSiggning(regularKeys = [], payment_json) {
     let signeds = [];
     for(let i = 0; i < this.quorum; i++) {
       let signed = this.api.sign(
         payment_json, 
-        signers[i].secret, 
+        regularKeys[i].secret, 
         {signAs: signers[i].address}
       ); 
       signeds.push(signed);
