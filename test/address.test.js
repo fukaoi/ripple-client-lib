@@ -1,4 +1,5 @@
-const Address = require('../src/lib/address');
+const config = require('config');
+const Address = require('../src/lib/address')
 const Define = require('./define');
 
 
@@ -6,6 +7,7 @@ let address;
 let faucetAddress;
 
 afterEach(() => {
+  console.log('## Call after method. ##');
   address.disconnect();
 });
 
@@ -32,4 +34,3 @@ test('Get seq number', async () => {
   const seq = await address.getSequence(faucetAddress);
   await expect(seq).toBeGreaterThan(0);
 });
-

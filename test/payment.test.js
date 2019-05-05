@@ -12,7 +12,6 @@ beforeAll(async () => {
   Define.sleep(5000); 
 });
 
-
 afterEach(() => {
   payment.disconnect();
 });
