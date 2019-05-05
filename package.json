@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --env node --detectOpenHandles"
+    "test": "jest --env node --detectOpenHandles",
+    "testw": "jest --watch --env node --detectOpenHandles"
   },
   "author": "",
   "license": "ISC",
