@@ -56,6 +56,23 @@ test('Add memo and Setup transacction', () => {
  });
 
 test('Prepare payment', async () => {
+  payment = new Payment(masterAddress);
+  payment.connect();
 
+  // source obj
+  const amount = '0.001';
+  const srcObj = payment.createSouce(amount);
+
+  // dest obj
+  const ad = JSON.parse(await address.generateFaucet()); 
+  const toAddress = ad.account.address;
+  const destObj = payment.createDestination(amount, toAddress);
+  // setup transacction
+  const tx = payment.setupTransaction(srcObj, destObj);
+  
+  // prepara obj
+  const fee = payment.setupFree();
+  const json = await payment.preparePayment(tx, fee, 2, 1);
+  expect(json).toBeDefined();
 });
 

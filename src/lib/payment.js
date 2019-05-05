@@ -33,7 +33,7 @@ module.exports = class Payment extends Client {
    }
 
   setupFree() {
-    return 10; 
+    return '0.00001'; 
   }
 
   async preparePayment(txjson, fee, quorum, seq) {
@@ -44,7 +44,7 @@ module.exports = class Payment extends Client {
     };
     const json = await this.api.preparePayment(
       this.masterAddress, 
-      txjson, 
+      txjson,
       instructions
     );
     return json;
