@@ -1,5 +1,6 @@
 const config = require('config');
-const Address = require('../src/lib/address')
+const Address = require('../src/lib/address');
+const Define = require('./define');
 
 
 let address;
@@ -15,7 +16,7 @@ beforeAll(async () => {
   const res = JSON.parse(await address.generateFaucet()); 
   console.log(res.account.address, res.account.secret, res.balance);
   faucetAddress = res.account.address;
-  sleep(5000); 
+  Define.sleep(5000); 
 });
 
 test('Generate new address', async () => {
@@ -39,10 +40,4 @@ test('No set param', async () => {
   const res = address.getSequence('');
   await expect(res).rejects.toThrow('No set address');
 });
-
-
-function sleep(waitMsec) {
-  let startMsec = new Date();
-  while (new Date() - startMsec < waitMsec);
-}
 
