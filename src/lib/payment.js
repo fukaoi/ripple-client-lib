@@ -26,9 +26,11 @@ module.exports = class Payment extends Client {
     return obj;
   }
 
-  addMemo() {
-  
-  }
+  setupTransaction(srcObj, destObj, memos = []) {
+    let merged = Object.assign(srcObj, destObj) 
+    if (memos.length) merged.memos = memos;
+    return merged;
+   }
 
   setupFree() {
     return 10; 

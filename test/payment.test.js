@@ -40,9 +40,20 @@ test('Create destination object', async () => {
   expect(res.destination.tag).toEqual(tag);
 });
 
-test('Add memo', () => {
-
-});
+test('Add memo and Setup transacction', () => {
+  const srcObj = {source: {}};
+  const destObj = {destination: {}};
+  payment = new Payment(masterAddress);
+  const memos = [{
+    "type":   "test",
+    "format": "text/plain",
+    "data":   "texted data" 
+  }];
+  const res = payment.setupTransaction(srcObj, destObj, memos);
+  expect(res.memos[0].type).toEqual('test');
+  expect(res.memos[0].format).toEqual('text/plain');
+  expect(res.memos[0].data).toEqual('texted data');
+ });
 
 test('Prepare payment', async () => {
 
