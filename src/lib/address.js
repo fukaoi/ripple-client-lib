@@ -1,5 +1,5 @@
-let Client = require('./client');
 const req = require('request');
+const Client = require('./client');
 
 module.exports = class Address extends Client{
   constructor(srv = '') {
@@ -7,9 +7,6 @@ module.exports = class Address extends Client{
   }
 
   async getSequence(address) { 
-    if (!address) {
-      throw new Error('No set address');
-    }
     const account_info = await this.api.getAccountInfo(address);
     return account_info.sequence;
   }

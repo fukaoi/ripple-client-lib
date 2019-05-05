@@ -1,31 +1,47 @@
-module.exports = class Payment {
-  createSouce() {
-    return {
-      source: {address: this.master_key.address,
-        amount: {value: amount, currency: 'XRP'}}
-    };
+const Client = require('./client');
+
+module.exports = class Payment extends Client {
+  
+  constructor(masterAddress, srv = '') {
+    super(srv);
+    this.masterAddress = masterAddress; 
   }
 
-  createDestination() {
-    return {
-      destination: {address: to, 
-        minAmount: {value: '' + amount, currency: 'XRP' }}  
+  createSouce(amount, tag = 0) {
+    let obj = {
+      source: {address: this.masterAddress,
+      amount: {value: amount, currency: 'XRP'}}
     };
+    if (tag > 0) obj.source.tag = tag;
+    return obj;
   }
 
-  tag_and_memo() {
+  createDestination(amount, toAddress, tag = 0) {
+    let obj = {
+        destination: {address: toAddress, 
+        // minAmount:   {value: '' + amount, currency: 'XRP' }} // check, need??? 
+        minAmount:   {value: amount, currency: 'XRP' }}  
+    };
+    if (tag > 0) obj.destination.tag = tag;
+    return obj;
+  }
+
+  addMemo() {
   
   }
 
-  async preparePayment(fee, txjson) {
-    const seq = await this.getSequence(this.master_key.address); 
+  setupFree() {
+    return 10; 
+  }
+
+  async preparePayment(txjson, fee, quorum, seq) {
     const instructions = {
         fee: fee,  
         sequence: seq,
-        signersCount: parseInt(this.quorum, 10) 
+        signersCount: quorum 
     };
     const json = await this.api.preparePayment(
-      this.master_key.address, 
+      this.masterAddress, 
       txjson, 
       instructions
     );
