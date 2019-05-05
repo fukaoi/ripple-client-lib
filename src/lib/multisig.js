@@ -1,22 +1,23 @@
 module.exports = class Multisig {
-  constructor(srv, master_key, signer_entries) {
-    this.api = new RippleAPI({server: srv});
-    this.master_key = master_key;
-    this.signer_entries = signer_entries;
+  constructor(masterAddress) {
+    this.masterAddress = masterAddress;
   }
 
-  async setupMultisig(quorum, fee) {
-    const seq = await this.getSequence(this.master_key.address); 
+  async setupMultisig(quorum, fee, seq) {
     const txjson = {
       'Flags': 0,
       'TransactionType': 'SignerListSet',
-      'Account': this.master_key.address,
+      'Account': this.masterAddress,
       'Sequence': seq,
-      'Fee': `${parseInt(fee, 10) * quorum}`,
+      'Fee': fee,
       'SignerQuorum': quorum,
       'SignerEntries': this.signer_entries,
     }    
     return txjson;
+  }
+
+  setupSignerList() {
+  
   }
 
   setupSignerSiggning(signers = [], payment_json) {
@@ -39,8 +40,3 @@ module.exports = class Multisig {
   }
  }
 
-const srv = process.env.SERVER;
-const quorum = process.env.QUORUM;
-const fee = process.env.FEE;
-const master_key = JSON.parse(process.env.MASTER_KEY);
-const signer_entries = JSON.parse(process.env.SIGNER_ENTRIES);
