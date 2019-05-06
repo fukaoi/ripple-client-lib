@@ -1,25 +1,36 @@
-const Client = require('./client');
+const Client  = require('./client');
+const Payment = require('./payment');
 
 module.exports = class Multisig extends Client {
-  constructor(masterAddress) {
+  constructor(masterAddress, quorum, srv = '') {
+    super(srv);
     this.masterAddress = masterAddress;
+    this.quorum = quorum;
   }
 
-  async setupMultisig(quorum, fee, seq, signerEngtries) {
+  async setupMultisig(seq, signerEngtries) {
+    //todo: what Flags???
     const txjson = {
       'Flags': 0,
       'TransactionType': 'SignerListSet',
       'Account': this.masterAddress,
       'Sequence': seq,
-      'Fee': fee,
-      'SignerQuorum': quorum,
-      'SignerEntries': SignerEntries,
+      'Fee': this.setupFee(),
+      'SignerQuorum': this.quorum,
+      'SignerEntries': signerEntries,
     }    
     return txjson;
   }
 
   setupSignerList(signers = [{address:'', weight: 0}]) {
-  
+    let signerEntries = [];
+    signers.map((signer) => {
+      let entry = {
+        SignerEntry: {Account: signer.address, SignerWeight: signer.weight}
+      };
+      signerEntries.push(entry);  
+    }); 
+    return signerEntries;
   }
 
   setupSignerSiggning(regularKeys = [], payment_json) {
@@ -33,6 +44,10 @@ module.exports = class Multisig extends Client {
       signeds.push(signed);
     }
     return signeds;
+  }
+
+  setupFee() {
+    Payment.setupFee() * this.quorum;  
   }
 
   setupCombined(signeds = []) {
