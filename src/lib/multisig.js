@@ -21,7 +21,7 @@ module.exports = class Multisig {
       'SignerQuorum': this.quorum,
       'SignerEntries': signerEntries
     }    
-    return txjson;
+    return JSON.stringify(txjson);
   }
 
   setupSignerList(signers = [{address:'', weight: 0}]) {
@@ -35,13 +35,13 @@ module.exports = class Multisig {
     return signerEntries;
   }
 
-  setupSignerSiggning(regularKeys = [], payment_json) {
+  setupSignerSignning(regularKeys = [], payment_json) {
     let signeds = [];
     for(let i = 0; i < this.quorum; i++) {
       let signed = this.api.sign(
         payment_json, 
         regularKeys[i].secret, 
-        {signAs: signers[i].address}
+        {signAs: regularKeys[i].address}
       ); 
       signeds.push(signed);
     }
