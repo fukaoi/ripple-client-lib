@@ -1,11 +1,11 @@
 const Client = require('./client');
 const Address = require('./address');
 
-module.exports = class Payment extends Client {
+module.exports = class Payment {
   
-  constructor(masterAddress, srv = '') {
-    super(srv);
+  constructor(masterAddress) {
     this.masterAddress = masterAddress; 
+    this.api = Client.instance;
   }
 
   createSouce(amount, tag = 0) {
@@ -40,6 +40,7 @@ module.exports = class Payment extends Client {
   async preparePayment(txjson, quorum) {
     const add = new Address();
     const seq = await add.getSequence(this.masterAddress);
+    console.log(seq);
     const instructions = {
         fee: `${Payment.setupFee()}`,  
         sequence: seq,

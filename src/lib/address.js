@@ -1,9 +1,10 @@
 const req = require('request');
 const Client = require('./client');
 
-module.exports = class Address extends Client{
-  constructor(srv = '') {
-    super(srv); 
+module.exports = class Address{
+
+  constructor() {
+    this.api = Client.instance;
   }
 
   async getSequence(address) { 

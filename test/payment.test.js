@@ -6,11 +6,11 @@ let payment ;
 beforeAll(async () => {
   masterAddress = await Define.address();
   payment = new Payment(masterAddress);
-  await payment.connect();
+  await payment.api.connect();
 });
 
 afterAll(async () => {
-  await payment.disconnect();
+  await payment.api.disconnect();
 });
 
 test('Create source object', () => {
@@ -52,6 +52,7 @@ test('Add memo and Setup transacction', () => {
  });
 
 test('Prepare payment', async () => {
+
   // source obj
   const amount = '0.001';
   const srcObj = payment.createSouce(amount);
