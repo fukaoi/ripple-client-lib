@@ -1,4 +1,5 @@
 const Client = require('./client');
+const Address = require('./address');
 
 module.exports = class Payment extends Client {
   
@@ -32,13 +33,15 @@ module.exports = class Payment extends Client {
     return merged;
    }
 
-  setupFree() {
-    return '0.00001'; 
+  static setupFee() {
+    return 0.00001; 
   }
 
-  async preparePayment(txjson, fee, quorum, seq) {
+  async preparePayment(txjson, quorum) {
+    const add = new Address();
+    const seq = await add.getSequence(this.masterAddress);
     const instructions = {
-        fee: fee,  
+        fee: `${Payment.setupFee()}`,  
         sequence: seq,
         signersCount: quorum 
     };

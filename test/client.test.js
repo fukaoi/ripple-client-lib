@@ -4,9 +4,8 @@ const Client = require('../src/lib/client')
 
 let client;
 
-afterEach(() => {
-  console.log('## Call after method. ##');
-  client.disconnect();
+afterEach(async () => {
+  await client.disconnect();
 });
 
 test('Client connect', async () => {
