@@ -3,8 +3,8 @@ const Multisig = require('../src/lib/multisig')
 
 let multisig;
 
-afterEach(() => {
-  multisig.disconnect();
+afterAll(() => {
+  multisig.api.disconnect();
 });
 
 test('Setup signer list', async () => {

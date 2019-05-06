@@ -1,21 +1,22 @@
 const Client  = require('./client');
 const Payment = require('./payment');
 
-module.exports = class Multisig extends Client {
-  constructor(masterAddress, quorum, srv = '') {
-    super(srv);
+module.exports = class Multisig {
+  constructor(masterAddress, quorum) {
     this.masterAddress = masterAddress;
     this.quorum = quorum;
+    this.api = Client.instance;
   }
 
-  async setupMultisig(seq, signerEngtries) {
+  async setupMultisig(signerEngtries) {
     //todo: what Flags???
+    const seq = await new Address().getSequence(this.masterAddress);
     const txjson = {
       'Flags': 0,
       'TransactionType': 'SignerListSet',
       'Account': this.masterAddress,
       'Sequence': seq,
-      'Fee': this.setupFee(),
+      'Fee': `${this.setupFee()}`,
       'SignerQuorum': this.quorum,
       'SignerEntries': signerEntries,
     }    

@@ -5,11 +5,11 @@ const Define = require('./define');
 let address = new Address();
 
 afterAll(async () => {
-  await address.disconnect();
+  await address.api.disconnect();
 });
 
 beforeAll(async () =>{
-  await address.connect();  
+  await address.api.connect();  
 });
 
 test('Generate new address', async () => {

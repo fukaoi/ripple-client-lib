@@ -40,7 +40,6 @@ module.exports = class Payment {
   async preparePayment(txjson, quorum) {
     const add = new Address();
     const seq = await add.getSequence(this.masterAddress);
-    console.log(seq);
     const instructions = {
         fee: `${Payment.setupFee()}`,  
         sequence: seq,
