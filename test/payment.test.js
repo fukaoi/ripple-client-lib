@@ -6,11 +6,6 @@ let payment ;
 beforeAll(async () => {
   masterAddress = await Define.address();
   payment = new Payment(masterAddress);
-  await payment.api.connect();
-});
-
-afterAll(async () => {
-  await payment.api.disconnect();
 });
 
 test('Create source object', () => {

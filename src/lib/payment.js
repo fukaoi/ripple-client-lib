@@ -38,18 +38,26 @@ module.exports = class Payment {
   }
 
   async preparePayment(txjson, quorum) {
-    const add = new Address();
-    const seq = await add.getSequence(this.masterAddress);
-    const instructions = {
+    try {
+      const add = new Address();
+      const seq = await add.getSequence(this.masterAddress);
+
+      await this.api.connect();
+      const instructions = {
         fee: `${Payment.setupFee()}`,  
         sequence: seq,
         signersCount: quorum 
-    };
-    const json = await this.api.preparePayment(
-      this.masterAddress, 
-      txjson,
-      instructions
-    );
-    return json;
+      };
+      const json = await this.api.preparePayment(
+        this.masterAddress, 
+        txjson,
+        instructions
+       );
+       return json;
+    } catch(e) {
+      throw e; 
+    } finally {
+      await this.api.disconnect();
+    }
   }
 }

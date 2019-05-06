@@ -8,13 +8,27 @@ module.exports = class Address{
   }
 
   async getSequence(address) { 
-    const account_info = await this.api.getAccountInfo(address);
-    return account_info.sequence;
+    try {
+      await this.api.connect();
+      const account_info = await this.api.getAccountInfo(address);
+      return account_info.sequence;
+    } catch(e) {
+      throw e; 
+    } finally {
+      await this.api.disconnect();
+    }
   }
 
   async newAddress() {
-    const created = await this.api.generateAddress();
-    return created;
+    try {
+      await this.api.connect();
+      const created = await this.api.generateAddress();
+      return created;
+    } catch(e) {
+      throw e; 
+    } finally {
+      await this.api.disconnect();
+    }
   }
 
   async generateFaucet() {

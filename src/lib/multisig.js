@@ -11,18 +11,25 @@ module.exports = class Multisig {
   }
 
   async setupMultisig(signerEntries) {
-    //todo: what Flags???
-    const seq = await new Address().getSequence(this.masterAddress);
-    const txjson = {
-      'Flags': 0,
-      'TransactionType': 'SignerListSet',
-      'Account': this.masterAddress,
-      'Sequence': seq,
-      'Fee': `${this.setupFee()}`,
-      'SignerQuorum': this.quorum,
-      'SignerEntries': signerEntries
-    }    
-    return JSON.stringify(txjson);
+    try {
+      await this.api.connect();
+      //todo: what Flags???
+      const seq = await new Address().getSequence(this.masterAddress);
+      const txjson = {
+        'Flags': 0,
+        'TransactionType': 'SignerListSet',
+        'Account': this.masterAddress,
+        'Sequence': seq,
+        'Fee': `${this.setupFee()}`,
+        'SignerQuorum': this.quorum,
+        'SignerEntries': signerEntries
+      }    
+      return JSON.stringify(txjson);
+    } catch(e) {
+      throw e; 
+    } finally {
+      await this.api.disconnect();
+    }
   }
 
   setupSignerList(signers = [{address:'', weight: 0}]) {
