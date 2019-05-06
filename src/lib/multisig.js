@@ -1,6 +1,7 @@
 const Client  = require('./client');
 const Payment = require('./payment');
 const Address = require('./address');
+const BigNumber = require('bignumber.js');
 
 module.exports = class Multisig {
   constructor(masterAddress, quorum) {
@@ -43,13 +44,17 @@ module.exports = class Multisig {
         regularKeys[i].secret, 
         {signAs: regularKeys[i].address}
       ); 
+
       signeds.push(signed);
     }
     return signeds;
   }
 
   setupFee() {
-    Payment.setupFee() * this.quorum;  
+    const drops = 1000000;
+    const x = new BigNumber(Payment.setupFee() * drops);
+    const y = new BigNumber(this.quorum);
+    return x.times(y).toNumber();
   }
 
   setupCombined(signeds = []) {

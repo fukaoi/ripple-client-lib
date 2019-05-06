@@ -60,14 +60,14 @@ class SendMultisig {
         signers[i].secret, 
         {signAs: signers[i].address}
       ); 
-      signeds.push(signed);
+      console.log(signed);
     }
     // signers.forEach((signer) => {
       // let signed = this.api.sign(payment_json, signer.secret, {signAs: signer.address}); 
       // signeds.push(signed);
     // });
     return signeds;
-  }
+  } 
 
   setupCombined(signeds = []) {
     return signeds.map((sig) => {

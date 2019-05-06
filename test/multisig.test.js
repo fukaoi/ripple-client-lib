@@ -4,10 +4,12 @@ const Client = require('../src/lib/client');
 const Address = require('../src/lib/address');
 
 let multisig;
+let masterAddress;
 const weight = 1;
 const quorum = 3;
 
-beforeAll(() => {
+beforeAll(async() => {
+  masterAddress = await Define.address();
   const api = Client.instance;
   api.connect();
 });
@@ -17,7 +19,6 @@ afterAll(() => {
 });
 
 test('Setup signer list', async () => {
-  const masterAddress = await Define.address();
   multisig = new Multisig(masterAddress, quorum);
   const entries = multisig.setupSignerList(await createSigners())
   expect(entries).toHaveLength(quorum);
@@ -25,8 +26,13 @@ test('Setup signer list', async () => {
   expect(entries[0].SignerEntry.SignerWeight).toBe(weight);
 });
 
+test('Setup fee by quorum', () => {
+  multisig = new Multisig(masterAddress, quorum);
+  const fee = multisig.setupFee(); 
+  expect(fee).toBe(30);
+});
+
 test('Setup multisig', async () => {
-  const masterAddress = await Define.address();
   multisig = new Multisig(masterAddress, quorum);
   const entries = multisig.setupSignerList(await createSigners())
   const txjson = await multisig.setupMultisig(entries);
@@ -35,13 +41,13 @@ test('Setup multisig', async () => {
 });
 
 test('Setup signer signning', async () => {
-  const masterAddress = await Define.address();
   multisig = new Multisig(masterAddress, quorum);
   const entries = multisig.setupSignerList(await createSigners())
   const txjson = await multisig.setupMultisig(entries);
   const res = multisig.setupSignerSignning(await createRegularKeys(), txjson)
-  console.log(res);
+  expect(res).toHaveLength(quorum);
 });
+
 
 async function createSigners() {
   let signers = [];

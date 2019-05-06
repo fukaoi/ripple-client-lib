@@ -24,7 +24,7 @@ class CreateSignerList {
       'TransactionType': 'SignerListSet',
       'Account': this.master_key.address,
       'Sequence': seq,
-      'Fee': `${parseInt(fee, 10) * quorum}`,
+      'Fee': '30',
       'SignerQuorum': quorum,
       'SignerEntries': this.signer_entries,
     }    
