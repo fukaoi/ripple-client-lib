@@ -1,5 +1,6 @@
 const Client  = require('./client');
 const Payment = require('./payment');
+const Address = require('./address');
 
 module.exports = class Multisig {
   constructor(masterAddress, quorum) {
@@ -30,7 +31,7 @@ module.exports = class Multisig {
         SignerEntry: {Account: signer.address, SignerWeight: signer.weight}
       };
       signerEntries.push(entry);  
-    }); 
+    }); ;
     return signerEntries;
   }
 
