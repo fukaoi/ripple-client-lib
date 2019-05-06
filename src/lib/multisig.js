@@ -9,7 +9,7 @@ module.exports = class Multisig {
     this.api = Client.instance;
   }
 
-  async setupMultisig(signerEngtries) {
+  async setupMultisig(signerEntries) {
     //todo: what Flags???
     const seq = await new Address().getSequence(this.masterAddress);
     const txjson = {
@@ -19,7 +19,7 @@ module.exports = class Multisig {
       'Sequence': seq,
       'Fee': `${this.setupFee()}`,
       'SignerQuorum': this.quorum,
-      'SignerEntries': signerEntries,
+      'SignerEntries': signerEntries
     }    
     return txjson;
   }

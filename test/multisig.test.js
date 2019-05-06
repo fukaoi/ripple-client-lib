@@ -29,9 +29,8 @@ test('Setup multisig', async () => {
   const masterAddress = await Define.address();
   multisig = new Multisig(masterAddress, quorum);
   const entries = multisig.setupSignerList(await createSigners())
-  console.log(entries);
   const res = await multisig.setupMultisig(entries);
-  console.log(res);
+  expect(res.Account).toBe(masterAddress);
 });
 
 async function createSigners() {
