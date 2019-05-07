@@ -1,5 +1,5 @@
 const config = require('config');
-const Client = require('../src/lib/client')
+const Client = require('../src/client')
 
 afterEach(async () => {
   const api = Client.instance;

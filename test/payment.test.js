@@ -1,5 +1,5 @@
 const Define = require('./define');
-const Payment = require('../src/lib/payment')
+const Payment = require('../src/payment')
 
 let payment ;
 

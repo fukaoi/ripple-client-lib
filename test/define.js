@@ -1,19 +1,18 @@
-const Address = require('../src/lib/address');
+const config = require('config');
+const exec = require('child_process').exec;
 
-const Define = {
-  sleep: (waitMsec) => {
-    let startMsec = new Date();
-    while (new Date() - startMsec < waitMsec);
-  },
+process.env.SERVER = config.get('server');
+process.env.SIGNER_ENTRIES = JSON.stringify(config.get('signer_entries'));
+process.env.REGULAR_KEYS = JSON.stringify(config.get('regular_keys'));
+process.env.MASTER_KEY = JSON.stringify(config.get('master_key'));
+process.env.QUORUM = config.get('quorum');
+process.env.FEE = config.get('fee');
+process.env.TO = config.get('to');
+process.env.AMOUNT = config.get('amount');
 
-  address: async () => {
-    const address = new Address();
-    const res = JSON.parse(await address.generateFaucet()); 
-    Define.sleep(5000); 
-    return res.account.address;
-  }
-};
+exec(`node ${process.argv[2]}`, function(err, stdout, stderr){
+  console.log(stdout);
+  console.error(stderr);
+});
 
-module.exports = Define;
 
-jest.setTimeout(60000); // jest timeout 60sec
