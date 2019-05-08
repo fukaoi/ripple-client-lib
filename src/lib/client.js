@@ -6,7 +6,7 @@ const SERVER      = 'wss://s2.ripple.com:51234';
 class Client {
   constructor(network = 'testnet') {
     let srv;
-    if (network == 'production') {
+    if (network == 'livenet') {
       srv = SERVER;
     } else {
       srv = TEST_SERVER;   
