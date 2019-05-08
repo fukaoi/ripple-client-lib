@@ -10,7 +10,7 @@ process.env.FEE = config.get('fee');
 process.env.TO = config.get('to');
 process.env.AMOUNT = config.get('amount');
 
-exec(`node ${process.argv[2]}`, function(err, stdout, stderr){
+exec(`NODE_PATH=./src node ${process.argv[2]}`, function(err, stdout, stderr){
   console.log(stdout);
   console.error(stderr);
 });

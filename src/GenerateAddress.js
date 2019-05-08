@@ -1,4 +1,4 @@
-const Address = require('./lib/address')
+const Address = require('lib/address')
 
 async function main(network) {
   try {
