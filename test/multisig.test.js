@@ -1,7 +1,7 @@
 const Define = require('./define');
-const Multisig = require('../src/multisig');
-const Client = require('../src/client');
-const Address = require('../src/address');
+const Multisig = require('../src/lib/multisig');
+const Client = require('../src/lib/client');
+const Address = require('../src/lib/address');
 
 let masterAddress;
 const weight = 1;

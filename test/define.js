@@ -1,4 +1,4 @@
-const Address = require('../src/address');
+const Address = require('../src/lib/address');
 
 const Define = {
   sleep: (waitMsec) => {

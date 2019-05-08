@@ -1,5 +1,5 @@
 const config = require('config');
-const Address = require('../src/address')
+const Address = require('../src/lib/address')
 const Define = require('./define');
 
 let address = new Address();
