@@ -1,7 +1,7 @@
 const config = require('config');
 const exec = require('child_process').exec;
 
-process.env.SERVER = config.get('server');
+process.env.NETWORK = config.get('network');
 process.env.SIGNER_ENTRIES = JSON.stringify(config.get('signer_entries'));
 process.env.REGULAR_KEYS = JSON.stringify(config.get('regular_keys'));
 process.env.MASTER_KEY = JSON.stringify(config.get('master_key'));

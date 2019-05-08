@@ -4,9 +4,9 @@ const TEST_SERVER = 'wss://s.altnet.rippletest.net:51233';
 const SERVER      = 'wss://s2.ripple.com:51234';
 
 class Client {
-  constructor() {
+  constructor(network = 'testnet') {
     let srv;
-    if (process.env.NODE_ENV == 'production') {
+    if (network == 'production') {
       srv = SERVER;
     } else {
       srv = TEST_SERVER;   

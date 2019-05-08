@@ -17,8 +17,6 @@
       "secret": "spzAGSGjHVqLrbseewsivtG1ah8GP"
   }],
 
-  "server":"wss://s.altnet.rippletest.net:51233",
-
   "signer_entries":[
   {
     "SignerEntry":{
