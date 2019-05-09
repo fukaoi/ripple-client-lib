@@ -9,7 +9,7 @@ module.exports = class Multisig {
     this.quorum = quorum;
     this.api = Client.instance;
   }
-
+  
   async setupMultisig(signerEntries) {
     try {
       await this.api.connect();
@@ -43,18 +43,24 @@ module.exports = class Multisig {
     return signerEntries;
   }
 
-  setupSignerSignning(regularKeys = [], payment_json) {
-    let signeds = [];
-    for(let i = 0; i < this.quorum; i++) {
-      let signed = this.api.sign(
-        payment_json, 
-        regularKeys[i].secret, 
-        {signAs: regularKeys[i].address}
-      ); 
-
-      signeds.push(signed);
+  async setupSignerSignning(regularKeys = [], payment_json) {
+    try {
+      await this.api.connect();
+      let signeds = [];
+      for(let i = 0; i < this.quorum; i++) {
+        let signed = await this.api.sign(
+          payment_json, 
+          regularKeys[i].secret, 
+          {signAs: regularKeys[i].address}
+        ); 
+        signeds.push(signed);
+      }
+      return signeds;
+    } catch(e) {
+      throw e;
+    } finally {
+      await this.api.disconnect();
     }
-    return signeds;
   }
 
   setupFee() {
@@ -69,5 +75,18 @@ module.exports = class Multisig {
       return sig.signedTransaction; 
     }); 
   }
+
+  async broadCast(txjson, secret) {
+    try {
+      await this.api.connect();
+      const signedTx = await this.api.sign(txjson, secret);
+      const res = await this.api.submit(signedTx.signedTransaction);
+      return res;
+    } catch(e) {
+      throw e;
+    } finally {
+      await this.api.disconnect();
+    }
+  } 
  }
 
