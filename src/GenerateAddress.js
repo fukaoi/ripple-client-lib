@@ -12,7 +12,8 @@ async function main(network) {
       console.log(JSON.stringify(account));
     }
   } catch(e) {
-    console.log(e)
+    console.error(e);
+    process.exit(1);
   }
 }
 

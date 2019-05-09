@@ -8,7 +8,8 @@ async function main(masterKey, quorum, signer_lists, regularKeys) {
     const res = await m.broadCast(txjson, masterKey.secret);
     console.log(JSON.stringify(res));
   } catch(e) {
-    console.log(e);
+    console.error(e);
+    process.exit(1);
   }
 }
 

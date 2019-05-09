@@ -26,7 +26,7 @@ module.exports = class Multisig {
       }    
       return JSON.stringify(txjson);
     } catch(e) {
-      throw e; 
+      throw new Error(e);
     } finally {
       await this.api.disconnect();
     }
@@ -57,7 +57,7 @@ module.exports = class Multisig {
       }
       return signeds;
     } catch(e) {
-      throw e;
+      throw new Error(e);
     } finally {
       await this.api.disconnect();
     }
@@ -83,7 +83,7 @@ module.exports = class Multisig {
       const res = await this.api.submit(signedTx.signedTransaction);
       return res;
     } catch(e) {
-      throw e;
+      throw new Error(e);
     } finally {
       await this.api.disconnect();
     }
