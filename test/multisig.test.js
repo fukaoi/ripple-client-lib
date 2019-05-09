@@ -36,7 +36,7 @@ test('Setup signer signning', async () => {
   let multisig = new Multisig(masterAddress, quorum);
   const entries = multisig.setupSignerList(await createSigners())
   const txjson = await multisig.setupMultisig(entries);
-  const res = multisig.setupSignerSignning(await createRegularKeys(), txjson)
+  const res = await multisig.setupSignerSignning(await createRegularKeys(), txjson)
   expect(res).toHaveLength(quorum);
 });
 
@@ -44,7 +44,7 @@ test('Setup combined', async () => {
   let multisig = new Multisig(masterAddress, quorum);
   const entries = multisig.setupSignerList(await createSigners())
   const txjson = await multisig.setupMultisig(entries);
-  const signed = multisig.setupSignerSignning(await createRegularKeys(), txjson)
+  const signed = await multisig.setupSignerSignning(await createRegularKeys(), txjson)
   const res = multisig.setupCombined(signed);
   expect(res).toHaveLength(quorum);
 });

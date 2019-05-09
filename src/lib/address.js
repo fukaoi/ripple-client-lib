@@ -13,7 +13,7 @@ module.exports = class Address{
       const account_info = await this.api.getAccountInfo(address);
       return account_info.sequence;
     } catch(e) {
-      throw e; 
+      throw new Error(e); 
     } finally {
       await this.api.disconnect();
     }
@@ -25,7 +25,7 @@ module.exports = class Address{
       const created = await this.api.generateAddress();
       return created;
     } catch(e) {
-      throw e; 
+      throw new Error(e); 
     } finally {
       await this.api.disconnect();
     }

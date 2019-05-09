@@ -55,7 +55,7 @@ module.exports = class Payment {
        );
        return json;
     } catch(e) {
-      throw e; 
+      throw new Error(e); 
     } finally {
       await this.api.disconnect();
     }
