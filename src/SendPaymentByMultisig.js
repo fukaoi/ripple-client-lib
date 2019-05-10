@@ -20,7 +20,6 @@ async function main(masterAddress, destinationAddress, regularKeys, amount, quor
 const masterAddress = JSON.parse(process.env.MASTER_KEY).address;
 const destinationAddress = process.env.TO;
 const quorum = parseInt(process.env.QUORUM);
-const signerLists = JSON.parse(process.env.SIGNER_LISTS);
 const regularKeys = JSON.parse(process.env.REGULAR_KEYS);
 const amount = JSON.parse(process.env.AMOUNT);
 const tags = JSON.parse(process.env.TAGS);
