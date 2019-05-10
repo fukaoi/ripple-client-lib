@@ -37,7 +37,7 @@ module.exports = class Payment {
     return 0.00001; 
   }
 
-  async preparePayment(txjson, quorum) {
+  async preparePayment(txRaw, quorum) {
     try {
       const add = new Address();
       const seq = await add.getSequence(this.masterAddress);
@@ -48,12 +48,12 @@ module.exports = class Payment {
         sequence: seq,
         signersCount: quorum 
       };
-      const json = await this.api.preparePayment(
+      const txJson = await this.api.preparePayment(
         this.masterAddress, 
-        txjson,
+        txRaw,
         instructions
        );
-       return json;
+       return txJson;
     } catch(e) {
       throw new Error(e); 
     } finally {
