@@ -1,12 +1,11 @@
 const Client  = require('./client');
-const Payment = require('./payment');
 const Address = require('./address');
 const BigNumber = require('bignumber.js');
 
 module.exports = class Multisig {
   constructor(masterAddress, quorum) {
     this.masterAddress = masterAddress;
-    this.quorum = quorum;
+    this.quorum = quorum; // todo: Need instance param?
     this.api = Client.instance;
   }
   
@@ -20,7 +19,7 @@ module.exports = class Multisig {
         'TransactionType': 'SignerListSet',
         'Account': this.masterAddress,
         'Sequence': seq,
-        'Fee': `${this.setupFee()}`,
+        'Fee': `${this.setupFee(signerEntries.length)}`,
         'SignerQuorum': this.quorum,
         'SignerEntries': signerEntries
       }    
@@ -43,37 +42,11 @@ module.exports = class Multisig {
     return signerEntries;
   }
 
-  async setupSignerSignning(regularKeys = [], payment_json) {
-    try {
-      await this.api.connect();
-      let signeds = [];
-      for(let i = 0; i < this.quorum; i++) {
-        let signed = await this.api.sign(
-          payment_json, 
-          regularKeys[i].secret, 
-          {signAs: regularKeys[i].address}
-        ); 
-        signeds.push(signed);
-      }
-      return signeds;
-    } catch(e) {
-      throw new Error(e);
-    } finally {
-      await this.api.disconnect();
-    }
-  }
-
   setupFee() {
-    const drops = 1000000;
-    const x = new BigNumber(Payment.setupFee() * drops);
-    const y = new BigNumber(this.quorum);
+    const fee = 10;
+    const x = new BigNumber(fee);
+    const y = new BigNumber(this.quorum); // todo: miss signerCounts
     return x.times(y).toNumber();
-  }
-
-  setupCombined(signeds = []) {
-    return signeds.map((sig) => {
-      return sig.signedTransaction; 
-    }); 
   }
 
   async broadCast(txjson, secret) {

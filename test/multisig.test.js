@@ -12,7 +12,7 @@ beforeAll(async() => {
 
 test('Setup signer list', async () => {
   let multisig = new Multisig(masterAddress, quorum);
-  const entries = multisig.setupSignerList(await createSigners())
+  const entries = multisig.setupSignerList(await Define.createSigners())
   expect(entries).toHaveLength(quorum);
   expect(entries[0].SignerEntry.Account).toHaveLength(34);
   expect(entries[0].SignerEntry.SignerWeight).toBe(weight);
@@ -26,47 +26,11 @@ test('Setup fee by quorum', () => {
 
 test('Setup multisig', async () => {
   let multisig = new Multisig(masterAddress, quorum);
-  const entries = multisig.setupSignerList(await createSigners())
+  const entries = multisig.setupSignerList(await Define.createSigners())
   const txjson = await multisig.setupMultisig(entries);
   const account = JSON.parse(txjson).Account;
   expect(account).toBe(masterAddress);
 });
 
-test('Setup signer signning', async () => {
-  let multisig = new Multisig(masterAddress, quorum);
-  const entries = multisig.setupSignerList(await createSigners())
-  const txjson = await multisig.setupMultisig(entries);
-  const res = await multisig.setupSignerSignning(await createRegularKeys(), txjson)
-  expect(res).toHaveLength(quorum);
-});
-
-test('Setup combined', async () => {
-  let multisig = new Multisig(masterAddress, quorum);
-  const entries = multisig.setupSignerList(await createSigners())
-  const txjson = await multisig.setupMultisig(entries);
-  const signed = await multisig.setupSignerSignning(await createRegularKeys(), txjson)
-  const res = multisig.setupCombined(signed);
-  expect(res).toHaveLength(quorum);
-});
 
 
-async function createSigners() {
-  let signers = [];
-  for (let i = 0; i < quorum; i++) {
-    let signer = {
-      address: await Define.address(), 
-      weight: weight
-    }   
-    signers.push(signer)
-  }
-  return signers; 
-}
-
-async function createRegularKeys() {
-  const address = new Address();
-  let regulars = [];
-  for (let i = 0; i < quorum; i++) {
-    regulars.push(await address.newAddress());
-  }
-  return regulars;
-}

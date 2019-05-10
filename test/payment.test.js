@@ -1,15 +1,17 @@
 const Define = require('./define');
 const Payment = require('../src/lib/payment')
 
-let payment ;
+let payment;
+let masterAddress;
 
 beforeAll(async () => {
   masterAddress = await Define.address();
-  payment = new Payment(masterAddress);
+  const regularKeys = await Define.createRegularKeys(); 
+  payment = new Payment(masterAddress, regularKeys);
 });
 
 test('Create source object', () => {
-  const amount = 0.001;
+  const amount = '0.001';
   const tag = 123;
   const res = payment.createSouce(amount, tag);
 
@@ -21,7 +23,7 @@ test('Create source object', () => {
 
 test('Create destination object', async () => {
   const toAddress = await Define.address(); 
-  const amount = 0.001;
+  const amount = '0.001';
   const tag = 456;
   const res = payment.createDestination(amount, toAddress, tag);
 
