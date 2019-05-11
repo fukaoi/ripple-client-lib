@@ -1,6 +1,6 @@
-const Client  = require('./client');
-const Address = require('./address');
-const BigNumber = require('bignumber.js');
+const Client = require("./client");
+const Address = require("./address");
+const BigNumber = require("bignumber.js");
 
 module.exports = class Multisig {
   constructor(masterAddress, quorum) {
@@ -8,37 +8,37 @@ module.exports = class Multisig {
     this.quorum = quorum; // todo: Need instance param?
     this.api = Client.instance;
   }
-  
+
   async setupMultisig(signerEntries) {
     try {
       await this.api.connect();
       //todo: what Flags???
       const seq = await new Address().getSequence(this.masterAddress);
       const txjson = {
-        'Flags': 0,
-        'TransactionType': 'SignerListSet',
-        'Account': this.masterAddress,
-        'Sequence': seq,
-        'Fee': `${this.setupFee(signerEntries.length)}`,
-        'SignerQuorum': this.quorum,
-        'SignerEntries': signerEntries
-      }    
+        Flags: 0,
+        TransactionType: "SignerListSet",
+        Account: this.masterAddress,
+        Sequence: seq,
+        Fee: `${this.setupFee(signerEntries.length)}`,
+        SignerQuorum: this.quorum,
+        SignerEntries: signerEntries
+      };
       return JSON.stringify(txjson);
-    } catch(e) {
+    } catch (e) {
       throw new Error(e);
     } finally {
       await this.api.disconnect();
     }
   }
 
-  setupSignerList(signers = [{address:'', weight: 0}]) {
+  setupSignerList(signers = [{ address: "", weight: 0 }]) {
     let signerEntries = [];
-    signers.map((signer) => {
+    signers.map(signer => {
       let entry = {
-        SignerEntry: {Account: signer.address, SignerWeight: signer.weight}
+        SignerEntry: { Account: signer.address, SignerWeight: signer.weight }
       };
-      signerEntries.push(entry);  
-    }); ;
+      signerEntries.push(entry);
+    });
     return signerEntries;
   }
 
@@ -55,11 +55,10 @@ module.exports = class Multisig {
       const signedTx = await this.api.sign(txjson, secret);
       const res = await this.api.submit(signedTx.signedTransaction);
       return res;
-    } catch(e) {
+    } catch (e) {
       throw new Error(e);
     } finally {
       await this.api.disconnect();
     }
-  } 
- }
-
+  }
+};
