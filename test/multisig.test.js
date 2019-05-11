@@ -48,11 +48,30 @@ test("Do broadcast ", async () => {
   expect(tx.tx_json.hash).toHaveLength(64);
 });
 
-test.only("Invalid params createSignerList()",async () => {
-  // expect(m.createSignerList([])).rejects.toThrow(Error);
+// test.only("Invalid params createSignerList()", () => {
+  // expect(m.createSignerList()).toThrow();
   // await expect(m.createSignerList(null)).rejects.toThrow(Error);
   // expect(m.createSignerList(undefined)).rejects.toThrow(Error);
-  await expect(m.createSignerList([1,2,3,4])).toThrow(Error);
+  // await expect(m.createSignerList([1,2,3,4])).toThrow(Error);
   // expect(m.createSignerList([{address: "", weight: 0 }])).rejects.toThrow(Error);
+// });
+
+test("Invalid params setupMultisig()", async () => {
+  const signers = await Define.createSigners(a);
+  const entries = m.createSignerList(signers);
+  await expect(m.setupMultisig('')).rejects.toThrow();
+  await expect(m.setupMultisig('', [], 0, 0)).rejects.toThrow();
+  await expect(m.setupMultisig(masterAccount.address, entries, 2, -1)).rejects.toThrow();
+  await expect(m.setupMultisig(masterAccount.address, entries, 0, 0.5)).rejects.toThrow();
+  await expect(m.setupMultisig(masterAccount.address, entries, -1, 0.5)).rejects.toThrow();
 });
+
+test("Invalid params broadCast() ", async () => {
+  await expect(m.broadCast()).rejects.toThrow();
+  await expect(m.broadCast('', '')).rejects.toThrow();
+  await expect(m.broadCast('xxxxxxxxxxxx', 'hogehoge')).rejects.toThrow();
+  await expect(m.broadCast('xxxxxxxxxxxx', 'ssJaD4Gq2JucUJwjQm8cRafkTvVos')).rejects.toThrow();
+});
+
+
 

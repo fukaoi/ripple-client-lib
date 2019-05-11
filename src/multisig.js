@@ -7,8 +7,22 @@ module.exports = class Multisig {
     this.a = new Address(ripplelib);
   }
 
+  createSignerList(signers = [{ address: "", weight: 0 }]) {
+    if (signers.length == 0 || !signers[0].address || signers[0].weight < 1) {
+      throw new Error(`signers is invalid: ${Util.inspect(signers)}`);
+    }
+    let signerEntries = [];
+    signers.map(signer => {
+      let entry = {
+        SignerEntry: { Account: signer.address, SignerWeight: signer.weight }
+      };
+      signerEntries.push(entry);
+    });
+    return signerEntries;
+  }
+
   async setupMultisig(masterAddress, signerEntries, quorum, fee) {
-    if (!quorum || !fee) {
+    if (!quorum || quorum < 1 || !fee || fee < 0) {
       throw new Error(`Set params(quorum, fee) is invalid`);
     }
 
@@ -36,25 +50,14 @@ module.exports = class Multisig {
     return JSON.stringify(txjson);
   }
 
-  createSignerList(signers = [{ address: "", weight: 0 }]) {
-    if (signers.length == 0 || !signers[0].address || signers[0].weight < 1) {
-      throw new Error(`signers is invalid: ${Util.inspect(signers)}`);
-    }
-    let signerEntries = [];
-    signers.map(signer => {
-      let entry = {
-        SignerEntry: { Account: signer.address, SignerWeight: signer.weight }
-      };
-      signerEntries.push(entry);
-    });
-    return signerEntries;
-  }
-
   async broadCast(txjson, secret) {
     if (!txjson || !secret) {
       throw new Error(
         `Set params(txjson, secret) is invalid: ${txjson}, ${secret}`
       );
+    }
+    if (!this.a.isValidSecret(secret)) {
+      throw new Error(`Validate error secret: ${secret}`);
     }
     const signedTx = await this.api.sign(txjson, secret);
     const res = await this.api.submit(signedTx.signedTransaction);
