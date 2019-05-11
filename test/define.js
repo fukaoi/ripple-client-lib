@@ -1,11 +1,12 @@
 const Define = {
-  createSigners: async () => {
+  createSigners: async (a) => {
     let signers = [];
     const count = 3;
     const weight = 1;
     for (let i = 0; i < count; i++) {
+      let account = await a.newAccountTestnet();
       let signer = {
-        address: await Define.address(),
+        address: account.address,
         weight: weight
       };
       signers.push(signer);
@@ -13,12 +14,11 @@ const Define = {
     return signers;
   },
 
-  createRegularKeys: async () => {
-    const address = new Address();
+  createRegularKeys: async (address) => {
     const count = 3;
     let regulars = [];
     for (let i = 0; i < count; i++) {
-      regulars.push(await address.newAddress());
+      regulars.push(await address.newAccount());
     }
     return regulars;
   }
