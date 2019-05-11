@@ -18,7 +18,7 @@ module.exports = class Multisig {
       );
     }
 
-    if (a.isValidAddress(masterAddress)) {
+    if (!this.a.isValidAddress(masterAddress)) {
       throw new Error(`Validate error address: ${masterAddress}`);
     }
 
@@ -38,7 +38,7 @@ module.exports = class Multisig {
 
   createSignerList(signers = [{ address: "", weight: 0 }]) {
     if (signers.length == 0 || !signers[0].address || signers[0].weight < 1) {
-      throw new Error(`signers is invalid: ${signers}`);
+      throw new Error(`signers is invalid: ${Util.inspect(signers)}`);
     }
     let signerEntries = [];
     signers.map(signer => {

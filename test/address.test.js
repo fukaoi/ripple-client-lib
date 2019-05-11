@@ -43,7 +43,7 @@ test("Set invalid param getSequence()", async () => {
 });
 
 test("Is validate ripple address", async () => {
-  const address = 'rBmVUQNF6tJy4cLvoKdPXb4BNqKBk5JY1Y';
+  const address = 'rBshkANjvVbBBHwJZK74ZMv5LEnUuuxZKc';
   const res = a.isValidAddress(address);
   await expect(res).toBe(true);
 });
