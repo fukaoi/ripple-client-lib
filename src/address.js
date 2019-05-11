@@ -4,11 +4,12 @@ module.exports = class Address{
 
   constructor(ripplelib) {
     this.api = ripplelib;
+    this.INTERVAL = 1000;
   }
 
   async getSequence(address) { 
-    const account_info = await this.api.getAccountInfo(address);
-    return account_info.sequence;
+    const info = await this.api.getAccountInfo(address);
+    return info.sequence;
   }
 
   async newAddress() {
@@ -35,6 +36,13 @@ module.exports = class Address{
       }); 
     }
     const res = await doRequest(options);
+    this.setInterval(this.INTERVAL);
     return JSON.parse(res).account;
   }
-}
+
+  setInterval(waitMsec) {
+    const startMsec = new Date();
+    while (new Date() - startMsec < waitMsec);
+}}
+
+
