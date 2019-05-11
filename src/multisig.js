@@ -4,11 +4,12 @@ const Util = require("util");
 module.exports = class Multisig {
   constructor(ripplelib) {
     this.api = ripplelib;
+    this.a = new Address(ripplelib);
   }
 
   async setupMultisig(masterAddress, signerEntries, quorum, fee) {
-    if (!masterAddress || !quorum || !fee) {
-      throw new Error(`Set params(masterAddress, quorum, fee) is invalid`);
+    if (!quorum || !fee) {
+      throw new Error(`Set params(quorum, fee) is invalid`);
     }
 
     if (signerEntries.length == 0) {
@@ -17,7 +18,11 @@ module.exports = class Multisig {
       );
     }
 
-    const seq = await new Address(this.api).getSequence(masterAddress);
+    if (a.isValidAddress(masterAddress)) {
+      throw new Error(`Validate error address: ${masterAddress}`);
+    }
+
+    const seq = await this.a.getSequence(masterAddress);
     //todo: what Flags???
     const txjson = {
       Flags: 0,
