@@ -3,6 +3,8 @@ const RippleAPI = require("ripple-lib").RippleAPI;
 const TEST_SERVER = "wss://s.altnet.rippletest.net:51233";
 const SERVER = "wss://s2.ripple.com:51234";
 
+
+// singleton object
 class Client {
   constructor(network = "testnet") {
     let srv;
