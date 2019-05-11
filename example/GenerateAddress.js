@@ -1,9 +1,9 @@
 const Address = require("../src/address");
-const RippleAPI = require('ripple-lib').RippleAPI;
+const RippleAPI = require("ripple-lib").RippleAPI;
 
 async function main(network, server) {
   try {
-    const api = new RippleAPI({server: server});
+    const api = new RippleAPI({ server: server });
     const a = new Address(api);
     let account = {};
     if (network == "testnet") {
@@ -20,6 +20,6 @@ async function main(network, server) {
   }
 }
 
-const server = 'wss://s.altnet.rippletest.net:51233';
-const network = 'testnet';
+const server = "wss://s.altnet.rippletest.net:51233";
+const network = "testnet";
 main(network, server);

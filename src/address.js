@@ -1,13 +1,12 @@
-const req = require('request');
+const req = require("request");
 
-module.exports = class Address{
-
+module.exports = class Address {
   constructor(ripplelib) {
     this.api = ripplelib;
     this.INTERVAL = 1000;
   }
 
-  async getSequence(address) { 
+  async getSequence(address) {
     const info = await this.api.getAccountInfo(address);
     return info.sequence;
   }
@@ -21,11 +20,11 @@ module.exports = class Address{
   // only address in testnet
   async newAddressWithFaucet() {
     const options = {
-      uri: 'https://faucet.altnet.rippletest.net/accounts',
-      headers: {"Content-type": "application/json"}
-    } 
+      uri: "https://faucet.altnet.rippletest.net/accounts",
+      headers: { "Content-type": "application/json" }
+    };
 
-    const doRequest = (options) => {
+    const doRequest = options => {
       return new Promise((resolve, reject) => {
         req.post(options, (error, response, body) => {
           if (!error && response.statusCode == 200) {
@@ -34,8 +33,8 @@ module.exports = class Address{
             reject(error);
           }
         });
-      }); 
-    }
+      });
+    };
     const res = await doRequest(options);
     this.setInterval(this.INTERVAL);
     return JSON.parse(res).account;
@@ -44,6 +43,5 @@ module.exports = class Address{
   setInterval(waitMsec) {
     const startMsec = new Date();
     while (new Date() - startMsec < waitMsec);
-}}
-
-
+  }
+};
