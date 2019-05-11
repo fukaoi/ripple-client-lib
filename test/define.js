@@ -5,12 +5,12 @@ const Define = {
     const weight = 1;
     for (let i = 0; i < count; i++) {
       let signer = {
-        address: await Define.address(), 
+        address: await Define.address(),
         weight: weight
-      }   
-      signers.push(signer)
+      };
+      signers.push(signer);
     }
-    return signers;   
+    return signers;
   },
 
   createRegularKeys: async () => {

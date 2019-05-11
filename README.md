@@ -1,1 +1,1 @@
-# ripplelib-example
+# ripple-client-lib
