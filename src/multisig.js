@@ -1,5 +1,5 @@
 const Address = require("./address");
-const Util = require('util');
+const Util = require("util");
 
 module.exports = class Multisig {
   constructor(ripplelib) {
@@ -12,7 +12,9 @@ module.exports = class Multisig {
     }
 
     if (signerEntries.length == 0) {
-      throw new Error(`signerEntries is invalid: ${Util.inspect(signerEntries)}`);
+      throw new Error(
+        `signerEntries is invalid: ${Util.inspect(signerEntries)}`
+      );
     }
 
     const seq = await new Address(this.api).getSequence(masterAddress);
@@ -45,7 +47,9 @@ module.exports = class Multisig {
 
   async broadCast(txjson, secret) {
     if (!txjson || !secret) {
-      throw new Error(`Set params(txjson, secret) is invalid: ${txjson}, ${secret}`);
+      throw new Error(
+        `Set params(txjson, secret) is invalid: ${txjson}, ${secret}`
+      );
     }
     const signedTx = await this.api.sign(txjson, secret);
     const res = await this.api.submit(signedTx.signedTransaction);

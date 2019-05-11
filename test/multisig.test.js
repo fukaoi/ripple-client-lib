@@ -1,10 +1,10 @@
-const Define = require('./define');
-const Multisig = require('../src/multisig')
-const Address = require('../src/address')
-const RippleAPI = require('ripple-lib').RippleAPI;
+const Define = require("./define");
+const Multisig = require("../src/multisig");
+const Address = require("../src/address");
+const RippleAPI = require("ripple-lib").RippleAPI;
 
-const SERVER = 'wss://s.altnet.rippletest.net:51233';
-const api = new RippleAPI({server: SERVER});
+const SERVER = "wss://s.altnet.rippletest.net:51233";
+const api = new RippleAPI({ server: SERVER });
 const a = new Address(api);
 
 let masterAddress;
@@ -13,11 +13,11 @@ beforeAll(async () => {
   account = await a.newAccountTestnet();
   masterAddress = account.address;
   await api.connect();
-})
+});
 
 afterAll(async () => {
   await api.disconnect();
-})
+});
 
 const weight = 1;
 const quorum = 3;

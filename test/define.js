@@ -1,5 +1,5 @@
 const Define = {
-  createSigners: async (a) => {
+  createSigners: async a => {
     let signers = [];
     const count = 3;
     const weight = 1;
@@ -14,7 +14,7 @@ const Define = {
     return signers;
   },
 
-  createRegularKeys: async (address) => {
+  createRegularKeys: async address => {
     const count = 3;
     let regulars = [];
     for (let i = 0; i < count; i++) {
