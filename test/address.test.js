@@ -29,7 +29,7 @@ test("Generate new ddress with faucet", async () => {
 test("Get seq number", async () => {
   const res = await a.newAccountTestnet();
   // Until complete when created account in rippled network
-  a.setInterval(4000);
+  a.setInterval(5000);
   const seq = await a.getSequence(res.address);
   await expect(seq).toBeGreaterThan(0);
 });
@@ -41,3 +41,29 @@ test("Set invalid param getSequence()", async () => {
   await expect(a.getSequence(null)).rejects.toThrow(Error);
   await expect(a.getSequence(undefined)).rejects.toThrow(Error);
 });
+
+test("Is validate ripple address", async () => {
+  const address = 'rBmVUQNF6tJy4cLvoKdPXb4BNqKBk5JY1Y';
+  const res = a.isValidAddress(address);
+  await expect(res).toBe(true);
+});
+
+test("Error validate ripple address", async () => {
+  const address = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+  const res = a.isValidAddress(address);
+  await expect(res).toBe(false);
+});
+
+test("Is validate ripple secret", async () => {
+  const secret = 'ssJaD4Gq2JucUJwjQm8cRafkTvVos';
+  const res = a.isValidSecret(secret);
+  await expect(res).toBe(true);
+});
+
+test("Error validate ripple secret", async () => {
+  const secret = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+  const res = a.isValidSecret(secret);
+  await expect(res).toBe(false);
+});
+
+

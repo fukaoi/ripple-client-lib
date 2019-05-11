@@ -43,6 +43,14 @@ module.exports = class Address {
     return JSON.parse(res).account;
   }
 
+  isValidAddress(address) {
+    return this.api.isValidAddress(address);
+  }
+
+  isValidSecret(secret) {
+    return this.api.isValidSecret(secret);
+  }
+
   setInterval(waitMsec) {
     const startMsec = new Date();
     while (new Date() - startMsec < waitMsec);
