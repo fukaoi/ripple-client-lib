@@ -7,9 +7,9 @@ async function main(network, server) {
     const a = new Address(api);
     let account = {};
     if (network == "testnet") {
-      account = await a.newAddressWithFaucet();
+      account = await a.newAccountTestnet();
     } else if (network == "mainnet") {
-      account = await a.newAddress();
+      account = await a.newAccount();
     } else {
       throw new Error(`No match network name: ${network}`);
     }

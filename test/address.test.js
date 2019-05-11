@@ -16,19 +16,19 @@ afterAll(async () => {
 })
 
 test('Generate new address', async () => {
-  const res = await a.newAddress();
+  const res = await a.newAccount();
   expect(res.secret).not.toBeUndefined();
   expect(res.address).not.toBeUndefined();
 });
 
 test('Generate new ddress with faucet', async () => {
-  const res = await a.newAddressWithFaucet();
+  const res = await a.newAccountTestnet();
   expect(res.secret).not.toBeUndefined();
   expect(res.address).not.toBeUndefined();
 });
 
 test('Get seq number', async () => {
-  const res = await a.newAddressWithFaucet();
+  const res = await a.newAccountTestnet();
   // Until complete when created account in rippled network
   a.setInterval(4000);
   const seq = await a.getSequence(res.address);

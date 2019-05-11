@@ -15,13 +15,13 @@ module.exports = class Address {
   }
 
   // need not rippled connect()
-  async newAddress() {
+  async newAccount() {
     const created = await this.api.generateAddress();
     return created;
   }
 
   // only address in testnet
-  async newAddressWithFaucet() {
+  async newAccountTestnet() {
     const options = {
       uri: "https://faucet.altnet.rippletest.net/accounts",
       headers: { "Content-type": "application/json" }
