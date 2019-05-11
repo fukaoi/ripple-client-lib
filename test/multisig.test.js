@@ -7,11 +7,10 @@ const SERVER = 'wss://s.altnet.rippletest.net:51233';
 const api = new RippleAPI({server: SERVER});
 const a = new Address(api);
 
-let masterAddress;
+let masterAccount;
 
 beforeAll(async () => {
-  account = await a.newAccountTestnet();
-  masterAddress = account.address;
+  masterAccount = await a.newAccountTestnet();
   await api.connect();
 })
 
@@ -36,10 +35,21 @@ test("Setup multisig", async () => {
   let m = new Multisig(api);
   const signers = await Define.createSigners(a);
   const entries = m.createSignerList(signers);
-  const txjson = await m.setupMultisig(masterAddress, entries, 3, fee);
+  const txjson = await m.setupMultisig(masterAccount.address, entries, 3, fee);
   const json = JSON.parse(txjson);
-  expect(json.Account).toBe(masterAddress);
+  expect(json.Account).toBe(masterAccount.address);
   expect(json.Fee).toBe(`${fee}`);
+});
+
+test.only("Do broadcast ", async () => {
+  let m = new Multisig(api);
+  const signers = await Define.createSigners(a);
+  const entries = m.createSignerList(signers);
+  const txjson = await m.setupMultisig(masterAccount.address, entries, 3, fee);
+  const tx = await m.broadCast(txjson, masterAccount.secret);
+  console.log(tx);
+  expect(tx.resultCode).toBe('tesSUCCESS');
+  expect(tx.tx_json.hash).toHaveLength(64);
 });
 
 
