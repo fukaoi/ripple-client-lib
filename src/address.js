@@ -12,6 +12,7 @@ module.exports = class Address{
     return info.sequence;
   }
 
+  // need not rippled connect()
   async newAddress() {
     const created = await this.api.generateAddress();
     return created;

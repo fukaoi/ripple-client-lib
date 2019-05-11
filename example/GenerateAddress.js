@@ -1,21 +1,25 @@
-const Address = require("lib/address");
+const Address = require("../src/address");
+const RippleAPI = require('ripple-lib').RippleAPI;
 
-async function main(network) {
+async function main(network, server) {
   try {
-    const a = new Address();
+    const api = new RippleAPI({server: server});
+    const a = new Address(api);
     let account = {};
     if (network == "testnet") {
-      account = JSON.parse(await a.generateFaucet());
-      console.log(JSON.stringify(account.account));
-    } else {
+      account = await a.newAddressWithFaucet();
+    } else if (network == "mainnet") {
       account = await a.newAddress();
-      console.log(JSON.stringify(account));
+    } else {
+      throw new Error(`No match network name: ${network}`);
     }
+    console.log(JSON.stringify(account));
   } catch (e) {
     console.error(e);
     process.exit(1);
   }
 }
 
-const network = process.env.NETWORK;
-main(network);
+const server = 'wss://s.altnet.rippletest.net:51233';
+const network = 'testnet';
+main(network, server);
