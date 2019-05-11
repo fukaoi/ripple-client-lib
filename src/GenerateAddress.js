@@ -18,5 +18,4 @@ async function main(network) {
 }
 
 const network = process.env.NETWORK;
-
 main(network);
