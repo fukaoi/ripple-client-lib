@@ -34,3 +34,11 @@ test('Get seq number', async () => {
   const seq = await a.getSequence(res.address);
   await expect(seq).toBeGreaterThan(0);
 });
+
+test('Set invalid param getSequence()', async () => {
+  await expect(a.getSequence(0)).rejects.toThrow(Error);
+  await expect(a.getSequence('')).rejects.toThrow(Error);
+  await expect(a.getSequence("")).rejects.toThrow(Error);
+  await expect(a.getSequence(null)).rejects.toThrow(Error);
+  await expect(a.getSequence(undefined)).rejects.toThrow(Error);
+});

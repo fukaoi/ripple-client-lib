@@ -7,6 +7,9 @@ module.exports = class Address {
   }
 
   async getSequence(address) {
+    if (!address) {
+      throw new Error(`Set address is invalid: ${address}`); 
+    }
     const info = await this.api.getAccountInfo(address);
     return info.sequence;
   }
