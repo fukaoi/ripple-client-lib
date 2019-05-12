@@ -7,8 +7,8 @@ module.exports = class Multisig {
     this.a = new Address(ripplelib);
   }
 
-  createSignerList(signers = [{ address: "", weight: 0 }]) {
-    if (signers.length == 0 || !signers[0].address || signers[0].weight < 1) {
+  createSignerList(signers) {
+    if (!Array.isArray(signers) || signers.length == 0 || !signers[0].address || signers[0].weight < 1) {
       throw new Error(`signers is invalid: ${Util.inspect(signers)}`);
     }
     let signerEntries = [];
@@ -26,7 +26,7 @@ module.exports = class Multisig {
       throw new Error(`Set params(quorum, fee) is invalid`);
     }
 
-    if (signerEntries.length == 0) {
+    if (!Array.isArray(signerEntries) || signerEntries.length == 0) {
       throw new Error(
         `signerEntries is invalid: ${Util.inspect(signerEntries)}`
       );
