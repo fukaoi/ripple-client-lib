@@ -4,10 +4,18 @@ const BigNumber = require("bignumber.js");
 module.exports = class Payment {
   constructor(ripplelib, masterAddress) {
     this.api = ripplelib;
+    this.a = new Address(ripplelib);
     this.masterAddress = masterAddress;
   }
 
   createTransaction(amount, toAddress, tags = {source: 0, destination: 0}, memos = []) {
+    if (!amount || amount < 0) {
+      throw new Error(`amount is invalid: ${amount}`); 
+    }
+    if (!this.a.isValidAddress(toAddress)) {
+      throw new Error(`Validate error address: ${toAddress}`);
+    }
+
     let sobj = {
       source: {
         address: this.masterAddress,
@@ -36,19 +44,15 @@ module.exports = class Payment {
     return merged;
   }
 
-  async preparePayment(txRaw, quorum, fee) {
-      const seq = await new Address(this.api).getSequence(this.masterAddress);
-      const instructions = {
-        fee: `fee`,
-        sequence: seq,
-        signersCount: quorum
-      };
-      const tx = await this.api.preparePayment(
+  async preparePayment(tx, quorum, fee) {
+      const seq = await this.a.getSequence(this.masterAddress);
+      const instructions = {fee: `${fee}`, sequence: seq, signersCount: quorum};
+      const txRaw = await this.api.preparePayment(
         this.masterAddress,
-        txRaw,
+        tx,
         instructions
       );
-      return tx.txJSON;
+      return txRaw.txJSON;
   }
 
   async setupSignerSignning(json, regularKeys) {

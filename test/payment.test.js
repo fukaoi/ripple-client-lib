@@ -5,11 +5,8 @@ const RippleAPI = require('ripple-lib').RippleAPI;
 
 const SERVER = 'wss://s.altnet.rippletest.net:51233';
 const api = new RippleAPI({server: SERVER});
-const a = new Address(api);
 
-let p;
-let masterAccount;
-const amount = 77777;
+const amount = 0.00077;
 const tags = {source: 111, destination: 999}
 const memos = [
   {
@@ -19,12 +16,23 @@ const memos = [
   }
 ];
 
+const quorum = 3;
+const fee = 0.00001;
+
+let a;
+let p;
+let masterAccount;
+let toAccount;
+let regularKeys;
+
 beforeAll(async () => {
-  api.connect();
-  const regularKeys = await Define.createRegularKeys(a);
+  await api.connect();
+  a = new Address(api);
   masterAccount = await a.newAccountTestnet();
-  p = new Payment(api, masterAccount.address);
+  toAccount     = await a.newAccountTestnet();
+  regularKeys   = await Define.createRegularKeys(a);
   a.setInterval(5000);
+  p = new Payment(api, masterAccount.address);
 });
 
 afterAll(async () => {
@@ -43,20 +51,63 @@ test("Setup transacction", async () => {
 });
 
 test("Prepare payment", async () => {
-  // source obj
-  const amount = "0.001";
-  const srcObj = p.createSouce(amount);
-
-  // dest obj
-  const toAddress = await a.newAccountTestnet();
-  // Until complete when created account in rippled network
-  a.setInterval(5000);
-  const destObj = p.createDestination(amount, toAddress);
-  // setup transacction
-  const tx = p.setupTransaction(srcObj, destObj);
-
-  // prepara obj
-  const json = await p.preparePayment(tx, 2);
-
-  expect(json).toBeDefined();
+  const tx = p.createTransaction(amount, toAccount.address, tags, memos);
+  const res = await p.preparePayment(tx, quorum, fee);
+  expect(res).toBeDefined();
+  const obj = JSON.parse(res); 
+  expect(obj.TransactionType).toEqual('Payment');
+  expect(obj.Account).toEqual(masterAccount.address);
+  expect(obj.Destination).toEqual(toAccount.address);
 });
+
+test("Setup signning", async () => {
+  const tx = p.createTransaction(amount, toAccount.address, tags, memos);
+  const json = await p.preparePayment(tx, quorum, fee);
+  const res = await p.setupSignerSignning(json, regularKeys);
+  expect(res.length).toEqual(regularKeys.length);
+});
+
+test("Boradcast", async () => {
+  const tx = p.createTransaction(amount, toAccount.address, tags, memos);
+  const json = await p.preparePayment(tx, quorum, fee);
+  const signed = await p.setupSignerSignning(json, regularKeys);
+  const res = await p.broadCast(signed);
+  expect(res.resultCode).toEqual('tefNOT_MULTI_SIGNING');
+  expect(res.tx_json.Fee).toEqual('40');
+});
+
+test.only("Invalid params createTransaction()", () => {
+  // jest incompatible on async/await (only Promise) 
+  try {
+    p.createTransaction(); 
+  } catch (e) {
+    console.log(e.message);
+    expect(true).toEqual(true);
+  }
+  try {
+    p.createTransaction('', ''); 
+  } catch (e) {
+    console.log(e.message);
+    expect(true).toEqual(true);
+  }
+  try {
+    p.createTransaction(100, ''); 
+  } catch (e) {
+    console.log(e.message);
+    expect(true).toEqual(true);
+  }
+  try {
+    p.createTransaction(100, 'xxxxxxxxxxxxxxxxxx'); 
+  } catch (e) {
+    console.log(e.message);
+    expect(true).toEqual(true);
+  }
+  try {
+    p.createTransaction(-1, 'rBshkANjvVbBBHwJZK74ZMv5LEnUuuxZKc'); 
+  } catch (e) {
+    console.log(e.message);
+    expect(true).toEqual(true);
+  }
+});
+
+
