@@ -45,7 +45,7 @@ module.exports = class Payment {
   }
 
   async preparePayment(tx, quorum, fee) {
-    if (!tx || !quorum || quorum < 0 || !fee || fee < 0) {
+    if (!tx || !quorum || quorum < 1 || !fee || fee < 0) {
       throw new Error(`Set params(tx, quorum, fee) is invalid: ${tx}, ${quorum}, ${fee}`); 
     }
     const seq = await this.a.getSequence(this.masterAddress);
