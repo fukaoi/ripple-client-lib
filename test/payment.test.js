@@ -9,12 +9,22 @@ const a = new Address(api);
 
 let p;
 let masterAccount;
+const amount = 77777;
+const tags = {source: 111, destination: 999}
+const memos = [
+  {
+    type: "test",
+    format: "text/plain",
+    data: "texted data"
+  }
+];
 
 beforeAll(async () => {
   api.connect();
   const regularKeys = await Define.createRegularKeys(a);
   masterAccount = await a.newAccountTestnet();
   p = new Payment(api, masterAccount.address);
+  a.setInterval(5000);
 });
 
 afterAll(async () => {
@@ -22,18 +32,7 @@ afterAll(async () => {
 });
 
 test("Setup transacction", async () => {
-  const amount = 77777;
-  const toAccount = await a.newAccountTestnet();
-  a.setInterval(5000);
-  const tags = {source: 111, destination: 999}
-  const memos = [
-    {
-      type: "test",
-      format: "text/plain",
-      data: "texted data"
-    }
-  ];
-  const res = p.createTransaction(amount, toAccount.address, tags, memos);
+ const res = p.createTransaction(amount, toAccount.address, tags, memos);
   expect(res.source.address).toEqual(masterAccount.address);
   expect(res.destination.address).toEqual(toAccount.address); 
   expect(res.source.tag).toEqual(tags.source);
