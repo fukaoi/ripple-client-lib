@@ -1,19 +1,30 @@
 const Define = require("./define");
-const Payment = require("../src/lib/payment");
+const Payment = require("../payment");
+const Address = require("../adress");
+const RippleAPI = require('ripple-lib').RippleAPI;
 
-let payment;
+const SERVER = 'wss://s.altnet.rippletest.net:51233';
+const api = new RippleAPI({server: SERVER});
+const a = new Address(api);
+
+let p;
 let masterAddress;
 
 beforeAll(async () => {
-  masterAddress = await Define.address();
+  api.connect();
   const regularKeys = await Define.createRegularKeys();
-  payment = new Payment(masterAddress, regularKeys);
+  masterAccount = await a.newAccountTestnet();
+  p = new Payment(masterAccount.address, regularKeys);
+});
+
+afterAll(async () => {
+  await api.disconnect();
 });
 
 test("Create source object", () => {
   const amount = "0.001";
   const tag = 123;
-  const res = payment.createSouce(amount, tag);
+  const res = p.createSouce(amount, tag);
 
   expect(res.source.address).toEqual(masterAddress);
   expect(res.source.amount.value).toEqual(amount);
@@ -22,10 +33,12 @@ test("Create source object", () => {
 });
 
 test("Create destination object", async () => {
-  const toAddress = await Define.address();
+  const toAddress = await a.newAccountTestnet();
+  // Until complete when created account in rippled network
+  a.setInterval(5000);
   const amount = "0.001";
   const tag = 456;
-  const res = payment.createDestination(amount, toAddress, tag);
+  const res = p.createDestination(amount, toAddress, tag);
 
   expect(res.destination.address).toEqual(toAddress);
   expect(res.destination.minAmount.value).toEqual(amount);
@@ -43,7 +56,7 @@ test("Add memo and Setup transacction", () => {
       data: "texted data"
     }
   ];
-  const res = payment.setupTransaction(srcObj, destObj, memos);
+  const res = p.setupTransaction(srcObj, destObj, memos);
 
   expect(res.memos[0].type).toEqual("test");
   expect(res.memos[0].format).toEqual("text/plain");
@@ -53,16 +66,18 @@ test("Add memo and Setup transacction", () => {
 test("Prepare payment", async () => {
   // source obj
   const amount = "0.001";
-  const srcObj = payment.createSouce(amount);
+  const srcObj = p.createSouce(amount);
 
   // dest obj
-  const toAddress = await Define.address();
-  const destObj = payment.createDestination(amount, toAddress);
+  const toAddress = await a.newAccountTestnet();
+  // Until complete when created account in rippled network
+  a.setInterval(5000);
+  const destObj = p.createDestination(amount, toAddress);
   // setup transacction
-  const tx = payment.setupTransaction(srcObj, destObj);
+  const tx = p.setupTransaction(srcObj, destObj);
 
   // prepara obj
-  const json = await payment.preparePayment(tx, 2);
+  const json = await p.preparePayment(tx, 2);
 
   expect(json).toBeDefined();
 });

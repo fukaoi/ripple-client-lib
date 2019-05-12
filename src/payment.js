@@ -3,49 +3,44 @@ const Address = require("./address");
 const BigNumber = require("bignumber.js");
 
 module.exports = class Payment {
-  constructor(masterAddress, regularKeys) {
+  constructor(ripplelib, masterAddress) {
+    this.api = ripplelib;
     this.masterAddress = masterAddress;
-    this.regularKeys = regularKeys;
-    this.api = Client.instance;
   }
 
-  createSouce(amount, tag = 0) {
-    let obj = {
+  createTransaction(amount, toAddress, tags = {source: 0, destination: 0}, memos = []) {
+    let sobj = {
       source: {
         address: this.masterAddress,
         amount: { value: `${amount}`, currency: "XRP" }
       }
     };
-    if (tag > 0) obj.source.tag = tag;
-    return obj;
-  }
 
-  createDestination(amount, toAddress, tag = 0) {
-    let obj = {
+    // source tag
+    if (tags.source > 0) sobj.source.tag = tags.source;
+
+    let dobj = {
       destination: {
         address: toAddress,
         // minAmount:   {value: '' + amount, currency: 'XRP' }} // check, need???
         minAmount: { value: `${amount}`, currency: "XRP" }
       }
     };
-    if (tag > 0) obj.destination.tag = tag;
+
+    // destination tag
+    if (tags.destination > 0) dobj.destination.tag = tag;
+    let merged = Object.assign(sObj, dObj);
+
+    // Memo
+    if (memos.length) merged.memos = memos;
+
     return obj;
   }
 
-  setupTransaction(srcObj, destObj, memos = []) {
-    let merged = Object.assign(srcObj, destObj);
-    if (memos.length) merged.memos = memos;
-    return merged;
-  }
-
-  async preparePayment(txRaw, quorum) {
-    try {
-      const a = new Address();
-      const seq = await a.getSequence(this.masterAddress);
-
-      await this.api.connect();
+  async preparePayment(txRaw, quorum, fee) {
+      const seq = await new Address(this.api).getSequence(this.masterAddress);
       const instructions = {
-        fee: `${this.setupFee(this.regularKeys.length)}`,
+        fee: `fee`,
         sequence: seq,
         signersCount: quorum
       };
@@ -55,43 +50,19 @@ module.exports = class Payment {
         instructions
       );
       return tx.txJSON;
-    } catch (e) {
-      throw new Error(e);
-    } finally {
-      await this.api.disconnect();
-    }
   }
 
-  setupFee(signersCount) {
-    const fee = 0.00001;
-    const x = new BigNumber(fee);
-    const y = new BigNumber(signersCount);
-    return x.times(y).toNumber();
-  }
-
-  async setupSignerSignning(payment_json) {
-    try {
-      await this.api.connect();
+  async setupSignerSignning(json, regularKeys) {
       let signeds = [];
-      for (let i = 0; i < this.regularKeys.length; i++) {
-        let signed = await this.api.sign(
-          payment_json,
-          this.regularKeys[i].secret,
-          { signAs: this.regularKeys[i].address }
+      for (let i = 0; i < regularKeys.length; i++) {
+        let signed = await this.api.sign(json, regularKeys[i].secret, { signAs: regularKeys[i].address }
         );
         signeds.push(signed);
       }
       return signeds;
-    } catch (e) {
-      throw new Error(e);
-    } finally {
-      await this.api.disconnect();
-    }
   }
 
   async broadCast(signeds) {
-    try {
-      await this.api.connect();
       const setupCombine = (signeds = []) => {
         return signeds.map(sig => {
           return sig.signedTransaction;
@@ -100,10 +71,5 @@ module.exports = class Payment {
       const combined = this.api.combine(setupCombine(signeds));
       const res = await this.api.submit(combined.signedTransaction);
       return res;
-    } catch (e) {
-      throw new Error(e);
-    } finally {
-      await this.api.disconnect();
-    }
   }
 };
