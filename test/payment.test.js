@@ -76,7 +76,7 @@ test("Boradcast", async () => {
   expect(res.tx_json.Fee).toEqual('40');
 });
 
-test.only("Invalid params createTransaction()", () => {
+test("Invalid params createTransaction()", () => {
   // jest incompatible on async/await (only Promise) 
   try {
     p.createTransaction(); 
@@ -108,6 +108,28 @@ test.only("Invalid params createTransaction()", () => {
     console.log(e.message);
     expect(true).toEqual(true);
   }
+});
+
+test("Invalid params preparePayment()", async () => {
+  expect(p.preparePayment()).rejects.toThrow();
+  expect(p.preparePayment('', 3, 3)).rejects.toThrow();
+  expect(p.preparePayment(null, 3, 3)).rejects.toThrow();
+  expect(p.preparePayment('tx', '', '')).rejects.toThrow();
+  expect(p.preparePayment('tx', 3, 0)).rejects.toThrow();
+  expect(p.preparePayment('tx', 0, 3)).rejects.toThrow();
+});
+
+test("Invalid params setupSignerSignning()", async () => {
+  expect(p.setupSignerSignning()).rejects.toThrow();
+  expect(p.setupSignerSignning('', '')).rejects.toThrow();
+  expect(p.setupSignerSignning('xxxxxx', [])).rejects.toThrow();
+});
+
+test("Invalid params broadCast()", async () => {
+  expect(p.broadCast()).rejects.toThrow();
+  expect(p.broadCast('')).rejects.toThrow();
+  expect(p.broadCast([])).rejects.toThrow();
+  expect(p.broadCast(10)).rejects.toThrow();
 });
 
 

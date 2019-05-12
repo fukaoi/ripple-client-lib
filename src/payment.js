@@ -45,17 +45,23 @@ module.exports = class Payment {
   }
 
   async preparePayment(tx, quorum, fee) {
-      const seq = await this.a.getSequence(this.masterAddress);
-      const instructions = {fee: `${fee}`, sequence: seq, signersCount: quorum};
-      const txRaw = await this.api.preparePayment(
-        this.masterAddress,
-        tx,
-        instructions
-      );
-      return txRaw.txJSON;
+    if (!tx || !quorum || quorum < 0 || !fee || fee < 0) {
+      throw new Error(`Set params(tx, quorum, fee) is invalid: ${tx}, ${quorum}, ${fee}`); 
+    }
+    const seq = await this.a.getSequence(this.masterAddress);
+    const instructions = {fee: `${fee}`, sequence: seq, signersCount: quorum};
+    const txRaw = await this.api.preparePayment(
+      this.masterAddress,
+      tx,
+      instructions
+    );
+    return txRaw.txJSON;
   }
 
   async setupSignerSignning(json, regularKeys) {
+    if (!json || !Array.isArray(regularKeys) || regularKeys.length == 0) {
+      throw new Error(`Set params(json, regularKeys) is invalid: ${json}, ${regularKeys}`); 
+    }
       let signeds = [];
       for (let i = 0; i < regularKeys.length; i++) {
         let signed = await this.api.sign(json, regularKeys[i].secret, { signAs: regularKeys[i].address }
@@ -66,7 +72,10 @@ module.exports = class Payment {
   }
 
   async broadCast(signeds) {
-      const setupCombine = (signeds = []) => {
+    if (!Array.isArray(signeds) || signeds.length == 0) {
+      throw new Error(`Signeds is invalid: ${signeds}`); 
+    }
+       const setupCombine = (signeds) => {
         return signeds.map(sig => {
           return sig.signedTransaction;
         });
