@@ -1,4 +1,3 @@
-const Client = require("./client");
 const Address = require("./address");
 const BigNumber = require("bignumber.js");
 
@@ -28,13 +27,13 @@ module.exports = class Payment {
     };
 
     // destination tag
-    if (tags.destination > 0) dobj.destination.tag = tag;
-    let merged = Object.assign(sObj, dObj);
+    if (tags.destination > 0) dobj.destination.tag = tags.destination;
+    let merged = Object.assign(sobj, dobj);
 
     // Memo
     if (memos.length) merged.memos = memos;
-
-    return obj;
+    
+    return merged;
   }
 
   async preparePayment(txRaw, quorum, fee) {

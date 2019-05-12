@@ -2,7 +2,7 @@ const Define = {
   createSigners: async a => {
     let signers = [];
     const count = 3;
-    const weight = 1;
+    const weight = 2;
     for (let i = 0; i < count; i++) {
       let account = await a.newAccountTestnet();
       let signer = {
@@ -14,11 +14,11 @@ const Define = {
     return signers;
   },
 
-  createRegularKeys: async address => {
+  createRegularKeys: async a => {
     const count = 3;
     let regulars = [];
     for (let i = 0; i < count; i++) {
-      regulars.push(await address.newAccount());
+      regulars.push(await a.newAccount());
     }
     return regulars;
   }
