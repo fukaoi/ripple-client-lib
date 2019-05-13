@@ -1,36 +1,27 @@
 const req = require("request");
-const Client = require("./client");
 
 module.exports = class Address {
-  constructor() {
-    this.api = Client.instance;
+  constructor(ripplelib) {
+    this.api = ripplelib;
+    this.INTERVAL = 1000;
   }
 
   async getSequence(address) {
-    try {
-      await this.api.connect();
-      const account_info = await this.api.getAccountInfo(address);
-      return account_info.sequence;
-    } catch (e) {
-      throw new Error(e);
-    } finally {
-      await this.api.disconnect();
+    if (!address) {
+      throw new Error(`Set address is invalid: ${address}`);
     }
+    const info = await this.api.getAccountInfo(address);
+    return info.sequence;
   }
 
-  async newAddress() {
-    try {
-      await this.api.connect();
-      const created = await this.api.generateAddress();
-      return created;
-    } catch (e) {
-      throw new Error(e);
-    } finally {
-      await this.api.disconnect();
-    }
+  // need not rippled connect()
+  async newAccount() {
+    const created = await this.api.generateAddress();
+    return created;
   }
 
-  async generateFaucet() {
+  // only address in testnet
+  async newAccountTestnet() {
     const options = {
       uri: "https://faucet.altnet.rippletest.net/accounts",
       headers: { "Content-type": "application/json" }
@@ -48,6 +39,20 @@ module.exports = class Address {
       });
     };
     const res = await doRequest(options);
-    return res;
+    this.setInterval(this.INTERVAL);
+    return JSON.parse(res).account;
+  }
+
+  isValidAddress(address) {
+    return this.api.isValidAddress(address);
+  }
+
+  isValidSecret(secret) {
+    return this.api.isValidSecret(secret);
+  }
+
+  setInterval(waitMsec) {
+    const startMsec = new Date();
+    while (new Date() - startMsec < waitMsec);
   }
 };

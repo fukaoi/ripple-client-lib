@@ -1,68 +1,135 @@
 const Define = require("./define");
 const Payment = require("../src/lib/payment");
+const Address = require("../src/lib/address");
+const RippleAPI = require('ripple-lib').RippleAPI;
 
-let payment;
-let masterAddress;
+const SERVER = 'wss://s.altnet.rippletest.net:51233';
+const api = new RippleAPI({server: SERVER});
+
+const amount = 0.00077;
+const tags = {source: 111, destination: 999}
+const memos = [
+  {
+    type: "test",
+    format: "text/plain",
+    data: "texted data"
+  }
+];
+
+const quorum = 3;
+const fee = 0.00001;
+
+let a;
+let p;
+let masterAccount;
+let toAccount;
+let regularKeys;
 
 beforeAll(async () => {
-  masterAddress = await Define.address();
-  const regularKeys = await Define.createRegularKeys();
-  payment = new Payment(masterAddress, regularKeys);
+  await api.connect();
+  a = new Address(api);
+  masterAccount = await a.newAccountTestnet();
+  toAccount     = await a.newAccountTestnet();
+  regularKeys   = await Define.createRegularKeys(a);
+  a.setInterval(5000);
+  p = new Payment(api, masterAccount.address);
 });
 
-test("Create source object", () => {
-  const amount = "0.001";
-  const tag = 123;
-  const res = payment.createSouce(amount, tag);
-
-  expect(res.source.address).toEqual(masterAddress);
-  expect(res.source.amount.value).toEqual(amount);
-  expect(res.source.amount.currency).toEqual("XRP");
-  expect(res.source.tag).toEqual(tag);
+afterAll(async () => {
+  await api.disconnect();
 });
 
-test("Create destination object", async () => {
-  const toAddress = await Define.address();
-  const amount = "0.001";
-  const tag = 456;
-  const res = payment.createDestination(amount, toAddress, tag);
-
-  expect(res.destination.address).toEqual(toAddress);
-  expect(res.destination.minAmount.value).toEqual(amount);
-  expect(res.destination.minAmount.currency).toEqual("XRP");
-  expect(res.destination.tag).toEqual(tag);
-});
-
-test("Add memo and Setup transacction", () => {
-  const srcObj = { source: {} };
-  const destObj = { destination: {} };
-  const memos = [
-    {
-      type: "test",
-      format: "text/plain",
-      data: "texted data"
-    }
-  ];
-  const res = payment.setupTransaction(srcObj, destObj, memos);
-
+test("Setup transacction", async () => {
+ const res = p.createTransaction(amount, toAccount.address, tags, memos);
+  expect(res.source.address).toEqual(masterAccount.address);
+  expect(res.destination.address).toEqual(toAccount.address); 
+  expect(res.source.tag).toEqual(tags.source);
+  expect(res.destination.tag).toEqual(tags.destination);
   expect(res.memos[0].type).toEqual("test");
   expect(res.memos[0].format).toEqual("text/plain");
   expect(res.memos[0].data).toEqual("texted data");
 });
 
 test("Prepare payment", async () => {
-  // source obj
-  const amount = "0.001";
-  const srcObj = payment.createSouce(amount);
-
-  // dest obj
-  const toAddress = await Define.address();
-  const destObj = payment.createDestination(amount, toAddress);
-  // setup transacction
-  const tx = payment.setupTransaction(srcObj, destObj);
-
-  // prepara obj
-  const json = await payment.preparePayment(tx, 2);
-
-  expect(json).toBeDefined();
+  const tx = p.createTransaction(amount, toAccount.address, tags, memos);
+  const res = await p.preparePayment(tx, quorum, fee);
+  expect(res).toBeDefined();
+  const obj = JSON.parse(res); 
+  expect(obj.TransactionType).toEqual('Payment');
+  expect(obj.Account).toEqual(masterAccount.address);
+  expect(obj.Destination).toEqual(toAccount.address);
 });
+
+test("Setup signning", async () => {
+  const tx = p.createTransaction(amount, toAccount.address, tags, memos);
+  const json = await p.preparePayment(tx, quorum, fee);
+  const res = await p.setupSignerSignning(json, regularKeys);
+  expect(res.length).toEqual(regularKeys.length);
+});
+
+test("Boradcast", async () => {
+  const tx = p.createTransaction(amount, toAccount.address, tags, memos);
+  const json = await p.preparePayment(tx, quorum, fee);
+  const signed = await p.setupSignerSignning(json, regularKeys);
+  const res = await p.broadCast(signed);
+  expect(res.resultCode).toEqual('tefNOT_MULTI_SIGNING');
+  expect(res.tx_json.Fee).toEqual('40');
+});
+
+test("Invalid params createTransaction()", () => {
+  // jest incompatible on async/await (only Promise) 
+  try {
+    p.createTransaction(); 
+  } catch (e) {
+    console.log(e.message);
+    expect(true).toEqual(true);
+  }
+  try {
+    p.createTransaction('', ''); 
+  } catch (e) {
+    console.log(e.message);
+    expect(true).toEqual(true);
+  }
+  try {
+    p.createTransaction(100, ''); 
+  } catch (e) {
+    console.log(e.message);
+    expect(true).toEqual(true);
+  }
+  try {
+    p.createTransaction(100, 'xxxxxxxxxxxxxxxxxx'); 
+  } catch (e) {
+    console.log(e.message);
+    expect(true).toEqual(true);
+  }
+  try {
+    p.createTransaction(-1, 'rBshkANjvVbBBHwJZK74ZMv5LEnUuuxZKc'); 
+  } catch (e) {
+    console.log(e.message);
+    expect(true).toEqual(true);
+  }
+});
+
+test("Invalid params preparePayment()", async () => {
+  expect(p.preparePayment()).rejects.toThrow();
+  expect(p.preparePayment('', 3, 3)).rejects.toThrow();
+  expect(p.preparePayment(null, 3, 3)).rejects.toThrow();
+  expect(p.preparePayment('tx', '', '')).rejects.toThrow();
+  expect(p.preparePayment('tx', 3, 0)).rejects.toThrow();
+  expect(p.preparePayment('tx', 0, 3)).rejects.toThrow();
+});
+
+test("Invalid params setupSignerSignning()", async () => {
+  expect(p.setupSignerSignning()).rejects.toThrow();
+  expect(p.setupSignerSignning('', '')).rejects.toThrow();
+  expect(p.setupSignerSignning('xxxxxx', [])).rejects.toThrow();
+});
+
+test("Invalid params broadCast()", async () => {
+  expect(p.broadCast()).rejects.toThrow();
+  expect(p.broadCast('')).rejects.toThrow();
+  expect(p.broadCast([])).rejects.toThrow();
+  expect(p.broadCast(10)).rejects.toThrow();
+});
+
+

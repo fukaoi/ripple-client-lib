@@ -1,25 +1,12 @@
-const Address = require("../src/lib/address");
-
 const Define = {
-  sleep: waitMsec => {
-    let startMsec = new Date();
-    while (new Date() - startMsec < waitMsec);
-  },
-
-  address: async () => {
-    const address = new Address();
-    const res = JSON.parse(await address.generateFaucet());
-    Define.sleep(5000);
-    return res.account.address;
-  },
-
-  createSigners: async () => {
+  createSigners: async a => {
     let signers = [];
     const count = 3;
     const weight = 1;
     for (let i = 0; i < count; i++) {
+      let account = await a.newAccountTestnet();
       let signer = {
-        address: await Define.address(),
+        address: account.address,
         weight: weight
       };
       signers.push(signer);
@@ -27,12 +14,11 @@ const Define = {
     return signers;
   },
 
-  createRegularKeys: async () => {
-    const address = new Address();
+  createRegularKeys: async a => {
     const count = 3;
     let regulars = [];
     for (let i = 0; i < count; i++) {
-      regulars.push(await address.newAddress());
+      regulars.push(await a.newAccount());
     }
     return regulars;
   }

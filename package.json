@@ -1,6 +1,6 @@
 {
   "name": "ripplelib-test",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "config": "^3.1.0",
     "ripple-lib": "^1.2.1"
   },
   "devDependencies": {
