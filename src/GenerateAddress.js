@@ -1,17 +1,15 @@
 const Address = require("lib/address");
 const RippleAPI = require("ripple-lib").RippleAPI;
 
-async function main(network, server) {
+async function main(server, isTestnet) {
   try {
     const api = new RippleAPI({ server: server });
     const a = new Address(api);
     let account = {};
-    if (network == "testnet") {
+    if (isTestnet == "true") {
       account = await a.newAccountTestnet();
-    } else if (network == "mainnet") {
-      account = await a.newAccount();
     } else {
-      throw new Error(`No match network name: ${network}`);
+      account = await a.newAccount();
     }
     console.log(JSON.stringify(account));
   } catch (e) {
@@ -21,5 +19,5 @@ async function main(network, server) {
 }
 
 const server = process.env.SERVER;
-const network = process.env.NETWORK;
-main(network, server);
+const isTestnet = process.env.IS_TESTNET;
+main(server, isTestnet);

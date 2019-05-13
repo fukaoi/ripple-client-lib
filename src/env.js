@@ -1,7 +1,7 @@
 const exec = require("child_process").exec;
 
 process.env.SERVER = 'wss://s.altnet.rippletest.net:51233';
-process.env.NETWORK = 'testnet';
+process.env.IS_TESTNET = 'true';
 process.env.MASTER_KEY = JSON.stringify({
   address: "raNMGRcQ7McWzXYL7LisGDPH5D5Qrtoprp",
   secret: "ssBKGd1TqzG1G1MrVMEw262ao98Sq"
