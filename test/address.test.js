@@ -1,5 +1,5 @@
 require("./define");
-const Address = require("../src/address");
+const Address = require("../src/lib/address");
 const RippleAPI = require("ripple-lib").RippleAPI;
 
 const SERVER = "wss://s.altnet.rippletest.net:51233";

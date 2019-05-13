@@ -1,4 +1,4 @@
-const Address = require("../src/address");
+const Address = require("./lib/address");
 const RippleAPI = require("ripple-lib").RippleAPI;
 
 async function main(network, server) {
@@ -20,6 +20,6 @@ async function main(network, server) {
   }
 }
 
-const server = "wss://s.altnet.rippletest.net:51233";
-const network = "testnet";
+const server = process.env.SERVER;
+const network = process.env.NETWORK;
 main(network, server);
