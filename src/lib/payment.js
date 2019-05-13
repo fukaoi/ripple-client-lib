@@ -45,7 +45,6 @@ module.exports = class Payment {
   }
 
   async preparePayment(tx, quorum, fee) {
-    console.log(quorum);
     if (!tx || !quorum || quorum < 1 || !fee || fee < 0) {
       throw new Error(`Set params(tx, quorum, fee) is invalid: ${tx}, ${quorum}, ${fee}`); 
     }
