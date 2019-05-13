@@ -1,6 +1,6 @@
 const Define = require('./define');
-const Multisig = require('../src/multisig')
-const Address = require('../src/address')
+const Multisig = require('../src/lib/multisig')
+const Address = require('../src/lib/address')
 const RippleAPI = require('ripple-lib').RippleAPI;
 
 const SERVER = 'wss://s.altnet.rippletest.net:51233';

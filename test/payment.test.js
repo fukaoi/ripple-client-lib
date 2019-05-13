@@ -1,6 +1,6 @@
 const Define = require("./define");
-const Payment = require("../src/payment");
-const Address = require("../src/address");
+const Payment = require("../src/lib/payment");
+const Address = require("../src/lib/address");
 const RippleAPI = require('ripple-lib').RippleAPI;
 
 const SERVER = 'wss://s.altnet.rippletest.net:51233';
