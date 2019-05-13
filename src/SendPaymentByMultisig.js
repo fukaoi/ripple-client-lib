@@ -1,5 +1,5 @@
 const RippleAPI = require("ripple-lib").RippleAPI;
-const Payment = require("./lib/payment");
+const Payment = require("lib/payment");
 
 async function main(
   server,

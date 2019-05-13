@@ -1,4 +1,4 @@
-const Address = require("./lib/address");
+const Address = require("lib/address");
 const RippleAPI = require("ripple-lib").RippleAPI;
 
 async function main(network, server) {

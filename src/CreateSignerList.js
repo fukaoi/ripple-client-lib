@@ -1,4 +1,4 @@
-const Multisig = require("./lib/multisig");
+const Multisig = require("lib/multisig");
 const RippleAPI = require("ripple-lib").RippleAPI;
 
 async function main(server, masterKey, quorum, fee, signerLists, regularKeys) {
