@@ -40,10 +40,11 @@ process.env.REGULAR_KEYS = JSON.stringify([
 
 process.env.TO_ADDRESS = "rsGPNkSLt36BDLMgPAYKifFvCphQJZ2qJw";
 
-process.env.QUORUM = 3;
-process.env.FEE = 30;
+const quorum = 3;
+process.env.QUORUM = quorum;
+process.env.FEE = 10 * quorum;      //10dropx => 0.00001xrp
 process.env.AMOUNT = 100;
-process.env.PAYMENT_FEE = 0.00001;
+process.env.PAYMENT_FEE = 0.00001; //0.00001xrp => 10drops
 process.env.TAGS = JSON.stringify({source: 8, destination: 1024});
 process.env.MEMOS = JSON.stringify([]);
 
