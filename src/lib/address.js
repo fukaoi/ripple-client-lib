@@ -3,7 +3,6 @@ const req = require("request");
 module.exports = class Address {
   constructor(ripplelib) {
     this.api = ripplelib;
-    this.INTERVAL = 1000;
   }
 
   async getSequence(address) {
@@ -39,7 +38,6 @@ module.exports = class Address {
       });
     };
     const res = await doRequest(options);
-    this.setInterval(this.INTERVAL);
     return JSON.parse(res).account;
   }
 
