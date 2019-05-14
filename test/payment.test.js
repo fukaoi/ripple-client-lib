@@ -76,10 +76,16 @@ test("Boradcast", async () => {
   expect(res.tx_json.Fee).toEqual('40');
 });
 
-test.only("Verify transaction", async () => {
+test("Verify transaction", async () => {
   txhash = '63BC7EAF14B032DF34E21F4BEC004A360D1FB5B260E8CBA6E92EB52639909C30';
-  const res = await p.verifyTransaction(txhash);
-  console.log(res);
+  const res = await p.isVerify(txhash);
+  expect(res).toEqual(true);
+}); 
+
+test("Verify transaction, add options at params", async () => {
+  txhash = '63BC7EAF14B032DF34E21F4BEC004A360D1FB5B260E8CBA6E92EB52639909C30';
+  const res = await p.isVerify(txhash);
+  expect(res).toEqual('true');
 }); 
 
 test("Invalid params createTransaction()", () => {
