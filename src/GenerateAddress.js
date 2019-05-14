@@ -7,9 +7,10 @@ async function main(server, isTestnet) {
     const a = new Address(api);
     let account = {};
     if (isTestnet) {
-      console.log("##### TESTNET ACCOUNT #####");
+      console.log("[TESTNET ACCOUNT]");
       account = await a.newAccountTestnet();
     } else {
+      console.log("[MAINNET ACCOUNT]");
       account = await a.newAccount();
     }
     console.log(JSON.stringify(account));
