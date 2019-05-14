@@ -6,7 +6,8 @@ async function main(server, isTestnet) {
     const api = new RippleAPI({ server: server });
     const a = new Address(api);
     let account = {};
-    if (isTestnet == "true") {
+    if (isTestnet) {
+      console.log("##### TESTNET ACCOUNT #####");
       account = await a.newAccountTestnet();
     } else {
       account = await a.newAccount();
