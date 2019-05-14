@@ -84,4 +84,24 @@ module.exports = class Payment {
       const res = await this.api.submit(combined.signedTransaction);
       return res;
   }
+
+  async verifyTransaction(
+    txhash, 
+    options = {minLedgerVersion: 0, maxLedgerVersion: 0}
+  ) {
+    try {
+      let res;
+      if (options.minLedgerVersion > 1 && options.masterAddress > 1) {
+        res = await this.api.getTransaction(txhash, options);
+      } else {
+        res = await this.api.getTransaction(txhash);
+      }
+      return res;
+    } catch(e) {
+      if (e instanceof this.api.errors.PendingLedgerVersionError) {
+        //recursive, after 1sec inteval 
+        setTimeout(this.verifyTransaction(txhash, options), 1000);
+      } 
+    } 
+  }
 };

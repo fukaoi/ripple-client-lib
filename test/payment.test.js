@@ -76,6 +76,12 @@ test("Boradcast", async () => {
   expect(res.tx_json.Fee).toEqual('40');
 });
 
+test.only("Verify transaction", async () => {
+  txhash = '63BC7EAF14B032DF34E21F4BEC004A360D1FB5B260E8CBA6E92EB52639909C30';
+  const res = await p.verifyTransaction(txhash);
+  console.log(res);
+}); 
+
 test("Invalid params createTransaction()", () => {
   // jest incompatible on async/await (only Promise) 
   try {
