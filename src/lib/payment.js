@@ -98,12 +98,21 @@ module.exports = class Payment {
       } else {
         res = await this.api.getTransaction(txhash);
       }
+      console.log("$$$$ res");
       return res;
     } catch(e) {
-      if (e instanceof this.api.errors.PendingLedgerVersionError) {
+      if (e instanceof this.api.errors.PendingLedgerVersionError || 
+          e instanceof this.api.errors.MissingLedgerHistoryError
+      ) {
         //recursive, after 1sec inteval 
-        setTimeout(this.verifyTransaction(txhash, options), 1000);
-      } 
+        console.log("do verify!");
+        setTimeout(() => {this.verifyTransaction(txhash, options)}, 1000);
+      }
+      // throw new Error(e);
     } 
   }
 };
+
+function a() {
+  return true
+}
