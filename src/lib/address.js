@@ -17,7 +17,7 @@ module.exports = class Address {
   }
 
   async getSequence(address) {
-    if (!this.isValidAddress(masterAddress)) {
+    if (!this.isValidAddress(address)) {
       throw new Error(`Validate error address: ${address}`);
     }
     const info = await this.api.getAccountInfo(address);
