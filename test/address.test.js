@@ -34,6 +34,21 @@ test("Get seq number", async () => {
   await expect(seq).toBeGreaterThan(0);
 });
 
+test("Set flags reequires payments to destination tag", async () => {
+  const address = 'r35n9krfgbY7Nq4eb8pEUikK7EgSFK4TS';
+  const flags = {requireDestinationTag: true};
+  const res = await a.setFlags(address, flags);
+  expect(res.SetFlag).toBe(1);
+});
+
+test.only("Set disable flags reequires payments to destination tag", async () => {
+  const address = 'r35n9krfgbY7Nq4eb8pEUikK7EgSFK4TS';
+  const flags = {requireDestinationTag: false};
+  const res = await a.setFlags(address, flags);
+  expect(res.ClearFlag).toBe(1);
+});
+
+
 test("Set invalid param getSequence()", async () => {
   await expect(a.getSequence(0)).rejects.toThrow(Error);
   await expect(a.getSequence("")).rejects.toThrow(Error);

@@ -5,9 +5,20 @@ module.exports = class Address {
     this.api = ripplelib;
   }
 
+  async setFlags(address, settings) {
+    if (!settings) {
+      throw new Error(`settings is invalid: ${settings}`);
+    }
+    if (!this.isValidAddress(address)) {
+      throw new Error(`Validate error address: ${address}`);
+    }
+    const tx = await this.api.prepareSettings(address, settings);
+    return JSON.parse(tx.txJSON);
+  }
+
   async getSequence(address) {
-    if (!address) {
-      throw new Error(`Set address is invalid: ${address}`);
+    if (!this.isValidAddress(masterAddress)) {
+      throw new Error(`Validate error address: ${address}`);
     }
     const info = await this.api.getAccountInfo(address);
     return info.sequence;
