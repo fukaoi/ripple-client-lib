@@ -24,7 +24,8 @@ module.exports = class Payment {
     };
 
     // source tag
-    if (tags.source > 0) sobj.source.tag = tags.source;
+    const sourceId = parseInt(tags.source);
+    if (sourceId > 0) sobj.source.tag = sourceId;
 
     let dobj = {
       destination: {
@@ -35,7 +36,8 @@ module.exports = class Payment {
     };
 
     // destination tag
-    if (tags.destination > 0) dobj.destination.tag = tags.destination;
+    const destinationId = parseInt(tags.destination);
+    if (destinationId > 0) dobj.destination.tag = destinationId;
     let merged = Object.assign(sobj, dobj);
 
     // Memo
