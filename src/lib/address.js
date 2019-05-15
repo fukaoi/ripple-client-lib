@@ -64,4 +64,18 @@ module.exports = class Address {
     const startMsec = new Date();
     while (new Date() - startMsec < waitMsec);
   }
+
+  async broadCast(txjson, secret) {
+    if (!txjson || !secret) {
+      throw new Error(
+        `Set params(txjson, secret) is invalid: ${txjson}, ${secret}`
+      );
+    }
+    if (!this.isValidSecret(secret)) {
+      throw new Error(`Validate error secret: ${secret}`);
+    }
+    const signedTx = await this.api.sign(JSON.stringify(txjson), secret);
+    const res = await this.api.submit(signedTx.signedTransaction);
+    return res;
+  }
 };

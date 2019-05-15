@@ -34,20 +34,26 @@ test("Get seq number", async () => {
   await expect(seq).toBeGreaterThan(0);
 });
 
-test.only("Set flags reequires payments to destination tag", async () => {
-  const address = 'raNMGRcQ7McWzXYL7LisGDPH5D5Qrtoprp';
-  // const address = 'r35n9krfgbY7Nq4eb8pEUikK7EgSFK4TS';
+test("Set flags reequires payments to destination tag", async () => {
+  const address = 'rD31mBhp9qY7gUwUCsAi38E8HJR6zBTSH5';
+  const secret = 'snPHz2vQKa1CbVihBsQc5yD1ZXn7g';
   const flags = {requireDestinationTag: true};
-  const res = await a.setFlags(address, flags);
-  console.log(res);
-  expect(res.SetFlag).toBe(1);
+  const obj = await a.setFlags(address, flags);
+  expect(obj.SetFlag).toBe(1);
+  const res = await a.broadCast(obj, secret); 
+  expect(res.resultCode).toBe('tesSUCCESS');
+  expect(res.tx_json.SetFlag).toBe(1);
 });
 
 test("Set disable flags reequires payments to destination tag", async () => {
-  const address = 'r35n9krfgbY7Nq4eb8pEUikK7EgSFK4TS';
+  const address = 'rD31mBhp9qY7gUwUCsAi38E8HJR6zBTSH5';
+  const secret = 'snPHz2vQKa1CbVihBsQc5yD1ZXn7g';
   const flags = {requireDestinationTag: false};
-  const res = await a.setFlags(address, flags);
-  expect(res.ClearFlag).toBe(1);
+  const obj = await a.setFlags(address, flags);
+  expect(obj.ClearFlag).toBe(1);
+  const res = await a.broadCast(obj, secret); 
+  expect(res.resultCode).toBe('tesSUCCESS');
+  expect(res.tx_json.ClearFlag).toBe(1);
 });
 
 
