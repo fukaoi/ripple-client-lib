@@ -87,7 +87,7 @@ module.exports = class Payment {
       return res;
   }
 
-  async isVerify(
+  async verifyTransaction(
     txhash, 
     options = {minLedgerVersion: 0, maxLedgerVersion: 0}
   ) {
@@ -98,7 +98,7 @@ module.exports = class Payment {
       } else {
         res = await this.api.getTransaction(txhash);
       }
-      return res.outcome.result  == 'tesSUCCESS';
+      return res;
     } catch(e) {
       if (e instanceof this.api.errors.PendingLedgerVersionError) {
         //recursive, after 1sec inteval 
