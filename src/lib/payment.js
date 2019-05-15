@@ -24,7 +24,8 @@ module.exports = class Payment {
     };
 
     // source tag
-    if (tags.source > 0) sobj.source.tag = tags.source;
+    const sourceId = parseInt(tags.source);
+    if (sourceId > 0) sobj.source.tag = sourceId;
 
     let dobj = {
       destination: {
@@ -35,7 +36,8 @@ module.exports = class Payment {
     };
 
     // destination tag
-    if (tags.destination > 0) dobj.destination.tag = tags.destination;
+    const destinationId = parseInt(tags.destination);
+    if (destinationId > 0) dobj.destination.tag = destinationId;
     let merged = Object.assign(sobj, dobj);
 
     // Memo
@@ -83,5 +85,25 @@ module.exports = class Payment {
       const combined = this.api.combine(setupCombine(signeds));
       const res = await this.api.submit(combined.signedTransaction);
       return res;
+  }
+
+  async isVerify(
+    txhash, 
+    options = {minLedgerVersion: 0, maxLedgerVersion: 0}
+  ) {
+    try {
+      let res;
+      if (options.minLedgerVersion > 1 && options.masterAddress > 1) {
+        res = await this.api.getTransaction(txhash, options);
+      } else {
+        res = await this.api.getTransaction(txhash);
+      }
+      return res.outcome.result  == 'tesSUCCESS';
+    } catch(e) {
+      if (e instanceof this.api.errors.PendingLedgerVersionError) {
+        //recursive, after 1sec inteval 
+        setTimeout(this.verifyTransaction(txhash, options), 1000);
+      } 
+    } 
   }
 };
