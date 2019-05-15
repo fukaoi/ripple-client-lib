@@ -76,18 +76,26 @@ test("Boradcast", async () => {
   expect(res.tx_json.Fee).toEqual('40');
 });
 
-test.only("Verify transaction", async () => {
+test("Verify transaction[data: Success send payment]", async () => {
   txhash = '63BC7EAF14B032DF34E21F4BEC004A360D1FB5B260E8CBA6E92EB52639909C30';
   const res = await p.verifyTransaction(txhash);
-  console.log(res);
   expect(res.outcome.result).toEqual('tesSUCCESS');
 }); 
 
-test.only("Verify transaction, add options at params", async () => {
-  txhash = '63BC7EAF14B032DF34E21F4BEC004A360D1FB5B260E8CBA6E92EB52639909C30';
+test.only("Verify transaction[data: Error send payment]", async () => {
+  txhash = 'B626C62C6576CC21437F1CE471704CA53085EFB4AA6C20C3E71ADF3C3C493FFE';
   const res = await p.verifyTransaction(txhash);
-  expect(res.outcome.result).toEqual('tesSUCCESS');
+  expect(res.outcome.result).toEqual('tecDST_TAG_NEEDED');
 }); 
+
+
+//todo: add options pattern
+test.only("Verify transaction[data: Error send payment]", async () => {
+  txhash = 'B626C62C6576CC21437F1CE471704CA53085EFB4AA6C20C3E71ADF3C3C493FFE';
+  const res = await p.verifyTransaction(txhash);
+  expect(res.outcome.result).toEqual('tecDST_TAG_NEEDED');
+}); 
+
 
 test("Invalid params createTransaction()", () => {
   // jest incompatible on async/await (only Promise) 
