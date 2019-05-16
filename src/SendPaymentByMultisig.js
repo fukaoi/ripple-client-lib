@@ -17,8 +17,8 @@ async function main(
     await api.connect();
     const p = new Payment(api, masterAddress);
     const tx = p.createTransaction(amount, toAddress, tags, memos);
-    const txJson = await p.preparePayment(tx, quorum,fee);
-    const signeds = await p.setupSignerSignning(txJson, regularKeys);
+    const txRaw = await p.preparePayment(tx, quorum,fee);
+    const signeds = await p.setupSignerSignning(txRaw.txJSON, regularKeys);
     const res = await p.broadCast(signeds);
     console.log(JSON.stringify(res));
   } catch (e) {
