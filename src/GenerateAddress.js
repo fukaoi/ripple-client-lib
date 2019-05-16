@@ -1,21 +1,25 @@
 const Address = require("lib/address");
+const RippleAPI = require("ripple-lib").RippleAPI;
 
-async function main(network) {
+async function main(server, isTestnet) {
   try {
-    const a = new Address();
+    const api = new RippleAPI({ server: server });
+    const a = new Address(api);
     let account = {};
-    if (network == "testnet") {
-      account = JSON.parse(await a.generateFaucet());
-      console.log(JSON.stringify(account.account));
+    if (isTestnet) {
+      console.log("[TESTNET ACCOUNT]");
+      account = await a.newAccountTestnet();
     } else {
-      account = await a.newAddress();
-      console.log(JSON.stringify(account));
+      console.log("[MAINNET ACCOUNT]");
+      account = await a.newAccount();
     }
+    console.log(JSON.stringify(account));
   } catch (e) {
     console.error(e);
     process.exit(1);
   }
 }
 
-const network = process.env.NETWORK;
-main(network);
+const server = process.env.SERVER;
+const isTestnet = process.env.IS_TESTNET;
+main(server, isTestnet);

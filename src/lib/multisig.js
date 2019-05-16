@@ -1,37 +1,16 @@
-const Client = require("./client");
 const Address = require("./address");
-const BigNumber = require("bignumber.js");
+const Util = require("util");
 
 module.exports = class Multisig {
-  constructor(masterAddress, quorum) {
-    this.masterAddress = masterAddress;
-    this.quorum = quorum; // todo: Need instance param?
-    this.api = Client.instance;
+  constructor(ripplelib) {
+    this.api = ripplelib;
+    this.a = new Address(ripplelib);
   }
 
-  async setupMultisig(signerEntries) {
-    try {
-      await this.api.connect();
-      //todo: what Flags???
-      const seq = await new Address().getSequence(this.masterAddress);
-      const txjson = {
-        Flags: 0,
-        TransactionType: "SignerListSet",
-        Account: this.masterAddress,
-        Sequence: seq,
-        Fee: `${this.setupFee(signerEntries.length)}`,
-        SignerQuorum: this.quorum,
-        SignerEntries: signerEntries
-      };
-      return JSON.stringify(txjson);
-    } catch (e) {
-      throw new Error(e);
-    } finally {
-      await this.api.disconnect();
+  createSignerList(signers) {
+    if (!Array.isArray(signers) || signers.length == 0 || !signers[0].address || signers[0].weight < 1) {
+      throw new Error(`signers is invalid: ${Util.inspect(signers)}`);
     }
-  }
-
-  setupSignerList(signers = [{ address: "", weight: 0 }]) {
     let signerEntries = [];
     signers.map(signer => {
       let entry = {
@@ -42,23 +21,46 @@ module.exports = class Multisig {
     return signerEntries;
   }
 
-  setupFee() {
-    const fee = 10;
-    const x = new BigNumber(fee);
-    const y = new BigNumber(this.quorum); // todo: miss signerCounts
-    return x.times(y).toNumber();
+  async setupMultisig(masterAddress, signerEntries, quorum, fee) {
+    if (!quorum || quorum < 1 || !fee || fee < 0) {
+      throw new Error(`Set params(quorum, fee) is invalid`);
+    }
+
+    if (!Array.isArray(signerEntries) || signerEntries.length == 0) {
+      throw new Error(
+        `signerEntries is invalid: ${Util.inspect(signerEntries)}`
+      );
+    }
+
+    if (!this.a.isValidAddress(masterAddress)) {
+      throw new Error(`Validate error address: ${masterAddress}`);
+    }
+
+    const seq = await this.a.getSequence(masterAddress);
+    //todo: what Flags???
+    const txjson = {
+      Flags: 0,
+      TransactionType: "SignerListSet",
+      Account: masterAddress,
+      Sequence: seq,
+      Fee: `${fee}`,
+      SignerQuorum: quorum,
+      SignerEntries: signerEntries
+    };
+    return JSON.stringify(txjson);
   }
 
   async broadCast(txjson, secret) {
-    try {
-      await this.api.connect();
-      const signedTx = await this.api.sign(txjson, secret);
-      const res = await this.api.submit(signedTx.signedTransaction);
-      return res;
-    } catch (e) {
-      throw new Error(e);
-    } finally {
-      await this.api.disconnect();
+    if (!txjson || !secret) {
+      throw new Error(
+        `Set params(txjson, secret) is invalid: ${txjson}, ${secret}`
+      );
     }
+    if (!this.a.isValidSecret(secret)) {
+      throw new Error(`Validate error secret: ${secret}`);
+    }
+    const signedTx = await this.api.sign(txjson, secret);
+    const res = await this.api.submit(signedTx.signedTransaction);
+    return res;
   }
 };

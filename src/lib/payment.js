@@ -1,98 +1,83 @@
-const Client = require("./client");
 const Address = require("./address");
 const BigNumber = require("bignumber.js");
 
 module.exports = class Payment {
-  constructor(masterAddress, regularKeys) {
+  constructor(ripplelib, masterAddress) {
+    this.api = ripplelib;
+    this.a = new Address(ripplelib);
     this.masterAddress = masterAddress;
-    this.regularKeys = regularKeys;
-    this.api = Client.instance;
   }
 
-  createSouce(amount, tag = 0) {
-    let obj = {
+  createTransaction(amount, toAddress, tags = {source: 0, destination: 0}, memos = []) {
+    if (!amount || amount < 0) {
+      throw new Error(`amount is invalid: ${amount}`); 
+    }
+    if (!this.a.isValidAddress(toAddress)) {
+      throw new Error(`Validate error address: ${toAddress}`);
+    }
+
+    let sobj = {
       source: {
         address: this.masterAddress,
         amount: { value: `${amount}`, currency: "XRP" }
       }
     };
-    if (tag > 0) obj.source.tag = tag;
-    return obj;
-  }
 
-  createDestination(amount, toAddress, tag = 0) {
-    let obj = {
+    // source tag
+    const sourceId = parseInt(tags.source);
+    if (sourceId > 0) sobj.source.tag = sourceId;
+
+    let dobj = {
       destination: {
         address: toAddress,
         // minAmount:   {value: '' + amount, currency: 'XRP' }} // check, need???
         minAmount: { value: `${amount}`, currency: "XRP" }
       }
     };
-    if (tag > 0) obj.destination.tag = tag;
-    return obj;
-  }
 
-  setupTransaction(srcObj, destObj, memos = []) {
-    let merged = Object.assign(srcObj, destObj);
+    // destination tag
+    const destinationId = parseInt(tags.destination);
+    if (destinationId > 0) dobj.destination.tag = destinationId;
+    let merged = Object.assign(sobj, dobj);
+
+    // Memo
     if (memos.length) merged.memos = memos;
+    
     return merged;
   }
 
-  async preparePayment(txRaw, quorum) {
-    try {
-      const a = new Address();
-      const seq = await a.getSequence(this.masterAddress);
-
-      await this.api.connect();
-      const instructions = {
-        fee: `${this.setupFee(this.regularKeys.length)}`,
-        sequence: seq,
-        signersCount: quorum
-      };
-      const tx = await this.api.preparePayment(
-        this.masterAddress,
-        txRaw,
-        instructions
-      );
-      return tx.txJSON;
-    } catch (e) {
-      throw new Error(e);
-    } finally {
-      await this.api.disconnect();
+  async preparePayment(tx, quorum, fee) {
+    if (!tx || !quorum || quorum < 1 || !fee || fee < 0) {
+      throw new Error(`Set params(tx, quorum, fee) is invalid: ${tx}, ${quorum}, ${fee}`); 
     }
+    const seq = await this.a.getSequence(this.masterAddress);
+    const instructions = {fee: `${fee}`, sequence: seq, signersCount: Number(3)};
+    const txRaw = await this.api.preparePayment(
+      this.masterAddress,
+      tx,
+      instructions
+    );
+    return txRaw.txJSON;
   }
 
-  setupFee(signersCount) {
-    const fee = 0.00001;
-    const x = new BigNumber(fee);
-    const y = new BigNumber(signersCount);
-    return x.times(y).toNumber();
-  }
-
-  async setupSignerSignning(payment_json) {
-    try {
-      await this.api.connect();
+  async setupSignerSignning(json, regularKeys) {
+    if (!json || !Array.isArray(regularKeys) || regularKeys.length == 0) {
+      throw new Error(`Set params(json, regularKeys) is invalid: ${json}, ${regularKeys}`); 
+    }
       let signeds = [];
-      for (let i = 0; i < this.regularKeys.length; i++) {
-        let signed = await this.api.sign(
-          payment_json,
-          this.regularKeys[i].secret,
-          { signAs: this.regularKeys[i].address }
+      for (let i = 0; i < regularKeys.length; i++) {
+        let signed = await this.api.sign(json, regularKeys[i].secret, { signAs: regularKeys[i].address }
         );
         signeds.push(signed);
       }
       return signeds;
-    } catch (e) {
-      throw new Error(e);
-    } finally {
-      await this.api.disconnect();
-    }
   }
 
   async broadCast(signeds) {
-    try {
-      await this.api.connect();
-      const setupCombine = (signeds = []) => {
+    if (!Array.isArray(signeds) || signeds.length == 0) {
+      throw new Error(`Signeds is invalid: ${signeds}`); 
+    }
+       const setupCombine = (signeds) => {
         return signeds.map(sig => {
           return sig.signedTransaction;
         });
@@ -100,10 +85,25 @@ module.exports = class Payment {
       const combined = this.api.combine(setupCombine(signeds));
       const res = await this.api.submit(combined.signedTransaction);
       return res;
-    } catch (e) {
-      throw new Error(e);
-    } finally {
-      await this.api.disconnect();
-    }
+  }
+
+  async isVerify(
+    txhash, 
+    options = {minLedgerVersion: 0, maxLedgerVersion: 0}
+  ) {
+    try {
+      let res;
+      if (options.minLedgerVersion > 1 && options.masterAddress > 1) {
+        res = await this.api.getTransaction(txhash, options);
+      } else {
+        res = await this.api.getTransaction(txhash);
+      }
+      return res.outcome.result  == 'tesSUCCESS';
+    } catch(e) {
+      if (e instanceof this.api.errors.PendingLedgerVersionError) {
+        //recursive, after 1sec inteval 
+        setTimeout(this.verifyTransaction(txhash, options), 1000);
+      } 
+    } 
   }
 };
