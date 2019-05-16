@@ -17,15 +17,10 @@ async function main(
     await api.connect();
     const p = new Payment(api, masterAddress);
     const tx = p.createTransaction(amount, toAddress, tags, memos);
-    const txJson = await p.preparePayment(tx, quorum,fee);
-    const signeds = await p.setupSignerSignning(txJson, regularKeys);
-    const firstRes = await p.broadCast(signeds);
-    console.log(firstRes);
-    const options = {
-      minLedgerVersion: firstRes.tx_json.LastLedgerSequence,
-      maxLedgerVersion: firstRes.tx_json.LastLedgerSequence + 50 
-    };
-    const res = await p.verifyTransaction(firstRes.tx_json.hash, options);
+    const txRaw = await p.preparePayment(tx, quorum,fee);
+    const ledger = await p.api.getLedger();
+    const signeds = await p.setupSignerSignning(txRaw.txJSON, regularKeys);
+    const res = await p.broadCastWithVerify(ledger.ledgerVersion, signeds, txRaw);
     console.log("main:", JSON.stringify(res));
   } catch (e) {
     console.error(e);

@@ -57,7 +57,7 @@ module.exports = class Payment {
       tx,
       instructions
     );
-    return txRaw.txJSON;
+    return txRaw;
   }
 
   async setupSignerSignning(json, regularKeys) {
@@ -87,32 +87,45 @@ module.exports = class Payment {
       return res;
   }
 
-  async verifyTransaction(
-    txhash, 
-    options = {minLedgerVersion: 0, maxLedgerVersion: 0}
-  ) {
-    try {
-      let res;
-      console.log(`txhash: ${txhash}`);
-      console.log(options);
-      if (options.minLedgerVersion > 1 && options.masterAddress > 1) {
-        res = await this.api.getTransaction(txhash, options);
-      } else {
-        res = await this.api.getTransaction(txhash);
-      }
-      console.log(`res: ${res}`);
+  async broadCastWithVerify(lastClosedLedgerVersion, signeds, prepared) {
+    if (!Array.isArray(signeds) || signeds.length == 0) {
+      throw new Error(`Signeds is invalid: ${signeds}`); 
+    }
+       const setupCombine = (signeds) => {
+        return signeds.map(sig => {
+          return sig.signedTransaction;
+        });
+      };
+      const combined = this.api.combine(setupCombine(signeds));
+      const firstRes = await this.api.submit(combined.signedTransaction);
+      const options = {
+        minLedgerVersion: lastClosedLedgerVersion,
+        maxLedgerVersion: prepared.instructions.maxLedgerVersion
+      };
+      const res = this.verifyTransaction(firstRes.tx_json.hash, options); 
       return res;
-    } catch(e) {
-      console.log(e);
-      if (e instanceof this.api.errors.PendingLedgerVersionError || 
-          e instanceof this.api.errors.MissingLedgerHistoryError
-      ) {
-        //recursive, after 1sec inteval 
-        console.log("do verify!");
-        this.a.setInterval(1000);
-        this.verifyTransaction(txhash, options);
-      }
-    } 
+  }
+
+  verifyTransaction(hash, options) {
+  console.log('Verifying Transaction');
+  return this.api.getTransaction(hash, options).then(data => {
+    console.log('Final Result: ', data.outcome.result);
+    console.log('Validated in Ledger: ', data.outcome.ledgerVersion);
+    console.log('Sequence: ', data.sequence);
+    // return data.outcome.result === 'tesSUCCESS';
+    return data;
+  }).catch(e => {
+    console.log("catch!");
+    /* If transaction not in latest validated ledger,
+       try again until max ledger hit */
+    if (e instanceof this.api.errors.PendingLedgerVersionError) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => this.verifyTransaction(hash, options)
+        .then(resolve, reject), 2000);
+      });
+    }
+    return e;
+  });    
   }
 };
 
