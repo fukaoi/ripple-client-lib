@@ -18,10 +18,9 @@ async function main(
     const p = new Payment(api, masterAddress);
     const tx = p.createTransaction(amount, toAddress, tags, memos);
     const txRaw = await p.preparePayment(tx, quorum,fee);
-    const ledger = await p.api.getLedger();
     const signeds = await p.setupSignerSignning(txRaw.txJSON, regularKeys);
-    const res = await p.broadCastWithVerify(ledger.ledgerVersion, signeds, txRaw);
-    console.log("main:", JSON.stringify(res));
+    const res = await p.broadCastWithVerify(signeds, txRaw);
+    console.log(JSON.stringify(res));
   } catch (e) {
     console.error(e);
     process.exit(1);

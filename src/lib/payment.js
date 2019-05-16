@@ -64,52 +64,48 @@ module.exports = class Payment {
     if (!json || !Array.isArray(regularKeys) || regularKeys.length == 0) {
       throw new Error(`Set params(json, regularKeys) is invalid: ${json}, ${regularKeys}`); 
     }
-      let signeds = [];
-      for (let i = 0; i < regularKeys.length; i++) {
-        let signed = await this.api.sign(json, regularKeys[i].secret, { signAs: regularKeys[i].address }
-        );
-        signeds.push(signed);
-      }
-      return signeds;
+    let signeds = [];
+    for (let i = 0; i < regularKeys.length; i++) {
+      let signed = await this.api.sign(json, regularKeys[i].secret, { signAs: regularKeys[i].address }
+      );
+      signeds.push(signed);
+    }
+    return signeds;
   }
 
   async broadCast(signeds) {
     if (!Array.isArray(signeds) || signeds.length == 0) {
       throw new Error(`Signeds is invalid: ${signeds}`); 
     }
-       const setupCombine = (signeds) => {
-        return signeds.map(sig => {
-          return sig.signedTransaction;
-        });
-      };
-      const combined = this.api.combine(setupCombine(signeds));
-      const res = await this.api.submit(combined.signedTransaction);
-      return res;
+    const setupCombine = (signeds) => {
+      return signeds.map(sig => {
+        return sig.signedTransaction;
+      });
+    };
+    const combined = this.api.combine(setupCombine(signeds));
+    return await this.api.submit(combined.signedTransaction);
   }
 
-  async broadCastWithVerify(lastClosedLedgerVersion, signeds, prepared) {
+  async broadCastWithVerify(signeds, prepared) {
     if (!Array.isArray(signeds) || signeds.length == 0) {
       throw new Error(`Signeds is invalid: ${signeds}`); 
     }
-       const setupCombine = (signeds) => {
-        return signeds.map(sig => {
-          return sig.signedTransaction;
-        });
-      };
-      const combined = this.api.combine(setupCombine(signeds));
-      const firstRes = await this.api.submit(combined.signedTransaction);
-      const options = {
-        minLedgerVersion: lastClosedLedgerVersion,
-        maxLedgerVersion: prepared.instructions.maxLedgerVersion
-      };
-      const res = this.verifyTransaction(firstRes.tx_json.hash, options); 
-      return res;
+    const setupCombine = (signeds) => {
+      return signeds.map(sig => {
+        return sig.signedTransaction;
+      });
+    };
+    const combined = this.api.combine(setupCombine(signeds));
+    const firstRes = await this.api.submit(combined.signedTransaction);
+    const options = {
+      minLedgerVersion: await this.api.getLedger().ledgerVerrsion,
+      maxLedgerVersion: prepared.instructions.maxLedgerVersion
+    };
+    return this.verifyTransaction(firstRes.tx_json.hash, options); 
   }
 
   verifyTransaction(hash, options) {
-    console.log('Verifying Transaction');
     return this.api.getTransaction(hash, options).then(data => {
-      console.log('Final Result: ', data.outcome.result);
       return data;
     }).catch(e => {
       if (e instanceof this.api.errors.PendingLedgerVersionError) {
