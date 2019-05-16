@@ -20,6 +20,7 @@ async function main(server, masterKey, quorum, fee, signerLists, regularKeys) {
     process.exit(1);
   } finally {
     await api.disconnect();
+    process.exit(0);
   }
 }
 
