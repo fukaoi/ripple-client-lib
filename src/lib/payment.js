@@ -93,26 +93,26 @@ module.exports = class Payment {
   ) {
     try {
       let res;
+      console.log(`txhash: ${txhash}`);
+      console.log(options);
       if (options.minLedgerVersion > 1 && options.masterAddress > 1) {
         res = await this.api.getTransaction(txhash, options);
       } else {
         res = await this.api.getTransaction(txhash);
       }
-      console.log("$$$$ res");
+      console.log(`res: ${res}`);
       return res;
     } catch(e) {
+      console.log(e);
       if (e instanceof this.api.errors.PendingLedgerVersionError || 
           e instanceof this.api.errors.MissingLedgerHistoryError
       ) {
         //recursive, after 1sec inteval 
         console.log("do verify!");
-        setTimeout(() => {this.verifyTransaction(txhash, options)}, 1000);
+        this.a.setInterval(1000);
+        this.verifyTransaction(txhash, options);
       }
-      // throw new Error(e);
     } 
   }
 };
 
-function a() {
-  return true
-}

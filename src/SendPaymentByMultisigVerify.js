@@ -20,8 +20,13 @@ async function main(
     const txJson = await p.preparePayment(tx, quorum,fee);
     const signeds = await p.setupSignerSignning(txJson, regularKeys);
     const firstRes = await p.broadCast(signeds);
-    const res = await p.verifyTransaction(firstRes.tx_json.hash);
-    console.log(JSON.stringify(res));
+    console.log(firstRes);
+    const options = {
+      minLedgerVersion: firstRes.tx_json.LastLedgerSequence,
+      maxLedgerVersion: firstRes.tx_json.LastLedgerSequence + 50 
+    };
+    const res = await p.verifyTransaction(firstRes.tx_json.hash, options);
+    console.log("main:", JSON.stringify(res));
   } catch (e) {
     console.error(e);
     process.exit(1);
