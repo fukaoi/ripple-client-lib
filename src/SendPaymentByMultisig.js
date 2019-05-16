@@ -26,6 +26,7 @@ async function main(
     process.exit(1);
   } finally {
     await api.disconnect();
+    process.exit(0);
   }
 }
 
