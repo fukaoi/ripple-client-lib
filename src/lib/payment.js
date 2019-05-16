@@ -107,25 +107,19 @@ module.exports = class Payment {
   }
 
   verifyTransaction(hash, options) {
-  console.log('Verifying Transaction');
-  return this.api.getTransaction(hash, options).then(data => {
-    console.log('Final Result: ', data.outcome.result);
-    console.log('Validated in Ledger: ', data.outcome.ledgerVersion);
-    console.log('Sequence: ', data.sequence);
-    // return data.outcome.result === 'tesSUCCESS';
-    return data;
-  }).catch(e => {
-    console.log("catch!");
-    /* If transaction not in latest validated ledger,
-       try again until max ledger hit */
-    if (e instanceof this.api.errors.PendingLedgerVersionError) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => this.verifyTransaction(hash, options)
-        .then(resolve, reject), 2000);
-      });
-    }
-    return e;
-  });    
+    console.log('Verifying Transaction');
+    return this.api.getTransaction(hash, options).then(data => {
+      console.log('Final Result: ', data.outcome.result);
+      return data;
+    }).catch(e => {
+      if (e instanceof this.api.errors.PendingLedgerVersionError) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => this.verifyTransaction(hash, options)
+            .then(resolve, reject), 2000);
+        });
+      }
+      return e;
+    });    
   }
 };
 
