@@ -13,6 +13,7 @@ let masterAccount;
 beforeAll(async () => {
   await api.connect();
   masterAccount = await a.newAccountTestnet();
+  a.setInterval(5000);
 })
 
 afterAll(async () => {
