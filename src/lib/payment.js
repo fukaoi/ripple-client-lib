@@ -51,7 +51,12 @@ module.exports = class Payment {
       throw new Error(`Set params(tx, quorum, fee) is invalid: ${tx}, ${quorum}, ${fee}`); 
     }
     const seq = await this.a.getSequence(this.masterAddress);
-    const instructions = {fee: `${fee}`, sequence: seq, signersCount: Number(3)};
+    const instructions = {
+      fee: `${fee}`, 
+      sequence: seq, 
+      signersCount: Number(3),
+      maxLedgerVersionOffset: 5,
+    };
     const txRaw = await this.api.preparePayment(
       this.masterAddress,
       tx,
@@ -101,20 +106,22 @@ module.exports = class Payment {
       minLedgerVersion: await this.api.getLedger().ledgerVerrsion,
       maxLedgerVersion: prepared.instructions.maxLedgerVersion
     };
+    this.a.setInterval(3000);
     return this.verifyTransaction(firstRes.tx_json.hash, options); 
   }
 
   verifyTransaction(hash, options) {
+    console.log("Verify loop");
     return this.api.getTransaction(hash, options).then(data => {
       return data;
     }).catch(e => {
       if (e instanceof this.api.errors.PendingLedgerVersionError) {
         return new Promise((resolve, reject) => {
           setTimeout(() => this.verifyTransaction(hash, options)
-            .then(resolve, reject), 2000);
+            .then(resolve, reject), 1000);
         });
       }
-      return e;
+      throw new Error(e);
     });    
   }
 };
