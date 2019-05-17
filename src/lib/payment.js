@@ -46,6 +46,21 @@ module.exports = class Payment {
     return merged;
   }
 
+  async submit(tx, fee, secret) {
+    if (!tx || !fee || fee < 0) {
+      throw new Error(`Set params(tx, fee) is invalid: ${tx}, ${fee}`); 
+    }
+    const seq = await this.a.getSequence(this.masterAddress);
+    const instructions = {fee: `${fee}`, sequence: seq};
+    const txRaw = await this.api.preparePayment(
+      this.masterAddress,
+      tx,
+      instructions
+    );
+    const signed = await this.api.sign(txRaw.txJSON, secret);
+    return await this.api.submit(signed.signedTransaction);
+  }
+
   async preparePayment(tx, quorum, fee) {
     if (!tx || !quorum || quorum < 1 || !fee || fee < 0) {
       throw new Error(`Set params(tx, quorum, fee) is invalid: ${tx}, ${quorum}, ${fee}`); 
