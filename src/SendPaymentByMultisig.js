@@ -8,7 +8,6 @@ async function main(
   regularKeys,
   amount,
   fee,
-  quorum,
   tags,
   memos
 ) {
@@ -17,7 +16,7 @@ async function main(
     await api.connect();
     const p = new Payment(api, masterAddress);
     const tx = p.createTransaction(amount, toAddress, tags, memos);
-    const txRaw = await p.preparePayment(tx, quorum,fee);
+    const txRaw = await p.preparePayment(tx, fee);
     const signeds = await p.setupSignerSignning(txRaw.txJSON, regularKeys);
     const res = await p.broadCast(signeds);
     console.log(JSON.stringify(res));
@@ -36,7 +35,6 @@ const toAddress     = process.env.TO_ADDRESS;
 const regularKeys   = JSON.parse(process.env.REGULAR_KEYS);
 const amount        = process.env.AMOUNT;
 const fee           = process.env.PAYMENT_FEE;
-const quorum        = process.env.QUORUM;
 const tags          = JSON.parse(process.env.TAGS);
 const memos         = JSON.parse(process.env.MEMOS);
  
@@ -47,7 +45,6 @@ main(
   regularKeys,
   amount,
   fee,
-  quorum,
   tags,
   memos
 );

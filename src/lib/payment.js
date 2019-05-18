@@ -61,9 +61,9 @@ module.exports = class Payment {
     return await this.api.submit(signed.signedTransaction);
   }
 
-  async preparePayment(tx, quorum, fee) {
-    if (!tx || !quorum || quorum < 1 || !fee || fee < 0) {
-      throw new Error(`Set params(tx, quorum, fee) is invalid: ${tx}, ${quorum}, ${fee}`); 
+  async preparePayment(tx, fee) {
+    if (!tx || !fee || fee < 0) {
+      throw new Error(`Set params(tx, fee) is invalid: ${tx}, ${fee}`); 
     }
     const seq = await this.a.getSequence(this.masterAddress);
     const instructions = {
