@@ -116,18 +116,14 @@ module.exports = class Payment {
       });
     };
     const combined = this.api.combine(setupCombine(signeds));
-    const firstRes = await this.api.submit(combined.signedTransaction);
-
-    if (firstRes.engine_result != 'tesSUCCESS') {
-      return this.convertSubmitToVerifyResponse(firstRes);
-    }
+    this.firstRes = await this.api.submit(combined.signedTransaction);
 
     const options = {
       minLedgerVersion: await this.api.getLedger().ledgerVerrsion,
       maxLedgerVersion: prepared.instructions.maxLedgerVersion
     };
     this.a.setInterval(3000);
-    return this.verifyTransaction(firstRes.tx_json.hash, options); 
+    return this.verifyTransaction(this.firstRes.tx_json.hash, options); 
   }
 
   verifyTransaction(hash, options) {
@@ -140,6 +136,8 @@ module.exports = class Payment {
           setTimeout(() => this.verifyTransaction(hash, options)
             .then(resolve, reject), 1000);
         });
+      } else if (e instanceof this.api.errors.MissingLedgerHistoryError) {
+        return this.convertSubmitToVerifyResponse(this.firstRes);
       }
       throw new Error(e);
     });    
