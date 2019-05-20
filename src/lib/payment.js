@@ -47,7 +47,7 @@ module.exports = class Payment {
   }
 
   async submit(tx, fee, secret) {
-    if (!tx || !fee || fee < 0) {
+    if (!tx || !fee) {
       throw new Error(`Set params(tx, fee) is invalid: ${tx}, ${fee}`); 
     }
     const seq = await this.a.getSequence(this.masterAddress);
