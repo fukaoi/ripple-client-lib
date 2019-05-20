@@ -117,6 +117,11 @@ module.exports = class Payment {
     };
     const combined = this.api.combine(setupCombine(signeds));
     const firstRes = await this.api.submit(combined.signedTransaction);
+
+    if (firstRes.engine_result != 'tesSUCCESS') {
+      return this.convertSubmitToVerifyResponse(firstRes);
+    }
+
     const options = {
       minLedgerVersion: await this.api.getLedger().ledgerVerrsion,
       maxLedgerVersion: prepared.instructions.maxLedgerVersion
@@ -138,6 +143,23 @@ module.exports = class Payment {
       }
       throw new Error(e);
     });    
+  }
+
+  convertSubmitToVerifyResponse(r) {
+    // deleted specification key(for not important)
+    return { 
+        type: r.tx_json.TransactionType,
+        address: r.tx_json.Account,
+        sequence: r.tx_json.Sequence,
+        id: r.tx_json.hash,
+        outcome:
+        { result: r.engine_result,
+          timestamp: '',
+          fee: r.tx_json.Fee, 
+          ledgerVersion: 0,
+          indexInLedger: 0,
+        },
+    }      
   }
 };
 
