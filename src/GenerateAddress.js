@@ -2,8 +2,9 @@ const Address = require("lib/address");
 const RippleAPI = require("ripple-lib").RippleAPI;
 
 async function main(server, isTestnet) {
+  const api = new RippleAPI({ server: server });
   try {
-    const api = new RippleAPI({ server: server });
+    await api.connect();
     const a = new Address(api);
     let account = {};
     if (isTestnet) {
@@ -17,6 +18,9 @@ async function main(server, isTestnet) {
   } catch (e) {
     console.error(e);
     process.exit(1);
+  } finally {
+    await api.disconnect();
+    process.exit(0);
   }
 }
 
