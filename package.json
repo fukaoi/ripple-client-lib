@@ -1,5 +1,5 @@
 {
-  "name": "ripplelib-test",
+  "name": "ripple-client-lib",
   "version": "2.0.0",
   "description": "",
   "main": "index.js",
