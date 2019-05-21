@@ -30,7 +30,6 @@ beforeAll(async () => {
   masterAccount = await a.newAccountTestnet();
   toAccount     = await a.newAccountTestnet();
   regularKeys   = await Define.createRegularKeys(a);
-  a.setInterval(5000);
   p = new Payment(api, masterAccount.address);
 });
 

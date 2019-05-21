@@ -127,14 +127,13 @@ module.exports = class Payment {
   }
 
   verifyTransaction(hash, options) {
-    console.log("Verify loop");
-    return this.api.getTransaction(hash, options).then(data => {
-      return data;
+    console.count("Verify Transaction loop");
+    return this.api.getTransaction(hash, options).then(resolve => {
+      return resolve;
     }).catch(e => {
       if (e instanceof this.api.errors.PendingLedgerVersionError) {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => this.verifyTransaction(hash, options)
-            .then(resolve, reject), 1000);
+        return new Promise((_, reject) => {
+          setTimeout(() => this.verifyTransaction(hash, options).then(_, reject), 1000);
         });
       } else if (e instanceof this.api.errors.MissingLedgerHistoryError) {
         return this.convertSubmitToVerifyResponse(this.firstRes);
