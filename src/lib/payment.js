@@ -144,6 +144,7 @@ module.exports = class Payment {
 
   convertSubmitToVerifyResponse(r) {
     // deleted specification key(for not important)
+    // not lost fee => fee: '0'
     return { 
         type: r.tx_json.TransactionType,
         address: r.tx_json.Account,
@@ -152,7 +153,7 @@ module.exports = class Payment {
         outcome:
         { result: r.engine_result,
           timestamp: '',
-          fee: r.tx_json.Fee, 
+          fee: '0', 
           ledgerVersion: 0,
           indexInLedger: 0,
         },
