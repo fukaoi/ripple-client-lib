@@ -55,13 +55,13 @@ module.exports = class Address {
 
   verifyAccountInfo(address) {
     console.log("Verify AccountInfo loop");
-    return this.api.getAccountInfo(address).then(data => {
+    return this.api.getAccountInfo(address).then(_ => {
       return JSON.parse(this.firstRes).account;
     }).catch(e => {
       if (e instanceof this.api.errors.RippledError) {
-        return new Promise((resolve, reject) => {
+        return new Promise((_, reject) => {
           setTimeout(() => this.verifyAccountInfo(address)
-            .then(resolve, reject), 1000);
+            .then(_, reject), 1000);
         }); 
       }
       throw new Error(e);
