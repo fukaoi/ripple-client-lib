@@ -54,7 +54,7 @@ module.exports = class Address {
   }
 
   verifyAccountInfo(address) {
-    console.log("Verify AccountInfo loop");
+    console.count("Verify AccountInfo loop");
     return this.api.getAccountInfo(address).then(_ => {
       return JSON.parse(this.firstRes).account;
     }).catch(e => {
