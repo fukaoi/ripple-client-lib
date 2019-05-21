@@ -1,5 +1,4 @@
 const Address = require("./address");
-const Util = require("util");
 
 module.exports = class Multisig {
   constructor(ripplelib) {
@@ -9,7 +8,7 @@ module.exports = class Multisig {
 
   createSignerList(signers) {
     if (!Array.isArray(signers) || signers.length == 0 || !signers[0].address || signers[0].weight < 1) {
-      throw new Error(`signers is invalid: ${Util.inspect(signers)}`);
+      throw new Error(`signers is invalid: ${signers}`);
     }
     let signerEntries = [];
     signers.map(signer => {
@@ -28,7 +27,7 @@ module.exports = class Multisig {
 
     if (!Array.isArray(signerEntries) || signerEntries.length == 0) {
       throw new Error(
-        `signerEntries is invalid: ${Util.inspect(signerEntries)}`
+        `signerEntries is invalid: ${signerEntries}`
       );
     }
 
