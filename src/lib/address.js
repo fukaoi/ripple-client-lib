@@ -48,8 +48,24 @@ module.exports = class Address {
         });
       });
     };
-    const res = await doRequest(options);
-    return JSON.parse(res).account;
+    this.firstRes = await doRequest(options);
+    this.setInterval(3000);
+    return this.verifyAccountInfo(JSON.parse(this.firstRes).account.address);
+  }
+
+  verifyAccountInfo(address) {
+    console.log("Verify AccountInfo loop");
+    return this.api.getAccountInfo(address).then(data => {
+      return JSON.parse(this.firstRes).account;
+    }).catch(e => {
+      if (e instanceof this.api.errors.RippledError) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => this.verifyAccountInfo(address)
+            .then(resolve, reject), 1000);
+        }); 
+      }
+      throw new Error(e);
+    });
   }
 
   isValidAddress(address) {
