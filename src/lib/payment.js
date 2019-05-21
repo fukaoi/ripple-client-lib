@@ -46,64 +46,118 @@ module.exports = class Payment {
     return merged;
   }
 
-  async preparePayment(tx, quorum, fee) {
-    if (!tx || !quorum || quorum < 1 || !fee || fee < 0) {
-      throw new Error(`Set params(tx, quorum, fee) is invalid: ${tx}, ${quorum}, ${fee}`); 
+  async submit(tx, fee, secret) {
+    if (!tx || !fee) {
+      throw new Error(`Set params(tx, fee) is invalid: ${tx}, ${fee}`); 
     }
     const seq = await this.a.getSequence(this.masterAddress);
-    const instructions = {fee: `${fee}`, sequence: seq, signersCount: Number(3)};
+    const instructions = {fee: `${fee}`, sequence: seq};
     const txRaw = await this.api.preparePayment(
       this.masterAddress,
       tx,
       instructions
     );
-    return txRaw.txJSON;
+    const signed = await this.api.sign(txRaw.txJSON, secret);
+    return await this.api.submit(signed.signedTransaction);
+  }
+
+  async preparePayment(tx, fee) {
+    if (!tx || !fee || fee < 0) {
+      throw new Error(`Set params(tx, fee) is invalid: ${tx}, ${fee}`); 
+    }
+    const seq = await this.a.getSequence(this.masterAddress);
+    const instructions = {
+      fee: `${fee}`, 
+      sequence: seq, 
+      signersCount: Number(3),
+      maxLedgerVersionOffset: 5,
+    };
+    const txRaw = await this.api.preparePayment(
+      this.masterAddress,
+      tx,
+      instructions
+    );
+    return txRaw;
   }
 
   async setupSignerSignning(json, regularKeys) {
     if (!json || !Array.isArray(regularKeys) || regularKeys.length == 0) {
       throw new Error(`Set params(json, regularKeys) is invalid: ${json}, ${regularKeys}`); 
     }
-      let signeds = [];
-      for (let i = 0; i < regularKeys.length; i++) {
-        let signed = await this.api.sign(json, regularKeys[i].secret, { signAs: regularKeys[i].address }
-        );
-        signeds.push(signed);
-      }
-      return signeds;
+    let signeds = [];
+    for (let i = 0; i < regularKeys.length; i++) {
+      let signed = await this.api.sign(json, regularKeys[i].secret, { signAs: regularKeys[i].address }
+      );
+      signeds.push(signed);
+    }
+    return signeds;
   }
 
   async broadCast(signeds) {
     if (!Array.isArray(signeds) || signeds.length == 0) {
       throw new Error(`Signeds is invalid: ${signeds}`); 
     }
-       const setupCombine = (signeds) => {
-        return signeds.map(sig => {
-          return sig.signedTransaction;
-        });
-      };
-      const combined = this.api.combine(setupCombine(signeds));
-      const res = await this.api.submit(combined.signedTransaction);
-      return res;
+    const setupCombine = (signeds) => {
+      return signeds.map(sig => {
+        return sig.signedTransaction;
+      });
+    };
+    const combined = this.api.combine(setupCombine(signeds));
+    return await this.api.submit(combined.signedTransaction);
   }
 
-  async isVerify(
-    txhash, 
-    options = {minLedgerVersion: 0, maxLedgerVersion: 0}
-  ) {
-    try {
-      let res;
-      if (options.minLedgerVersion > 1 && options.masterAddress > 1) {
-        res = await this.api.getTransaction(txhash, options);
-      } else {
-        res = await this.api.getTransaction(txhash);
-      }
-      return res.outcome.result  == 'tesSUCCESS';
-    } catch(e) {
+  async broadCastWithVerify(signeds, prepared) {
+    if (!Array.isArray(signeds) || signeds.length == 0) {
+      throw new Error(`Signeds is invalid: ${signeds}`); 
+    }
+    const setupCombine = (signeds) => {
+      return signeds.map(sig => {
+        return sig.signedTransaction;
+      });
+    };
+    const combined = this.api.combine(setupCombine(signeds));
+    this.firstRes = await this.api.submit(combined.signedTransaction);
+
+    const options = {
+      minLedgerVersion: await this.api.getLedger().ledgerVerrsion,
+      maxLedgerVersion: prepared.instructions.maxLedgerVersion
+    };
+    this.a.setInterval(3000);
+    return this.verifyTransaction(this.firstRes.tx_json.hash, options); 
+  }
+
+  verifyTransaction(hash, options) {
+    console.log("Verify loop");
+    return this.api.getTransaction(hash, options).then(data => {
+      return data;
+    }).catch(e => {
       if (e instanceof this.api.errors.PendingLedgerVersionError) {
-        //recursive, after 1sec inteval 
-        setTimeout(this.verifyTransaction(txhash, options), 1000);
-      } 
-    } 
+        return new Promise((resolve, reject) => {
+          setTimeout(() => this.verifyTransaction(hash, options)
+            .then(resolve, reject), 1000);
+        });
+      } else if (e instanceof this.api.errors.MissingLedgerHistoryError) {
+        return this.convertSubmitToVerifyResponse(this.firstRes);
+      }
+      throw new Error(e);
+    });    
+  }
+
+  convertSubmitToVerifyResponse(r) {
+    // deleted specification key(for not important)
+    return { 
+        type: r.tx_json.TransactionType,
+        address: r.tx_json.Account,
+        sequence: r.tx_json.Sequence,
+        id: r.tx_json.hash,
+        outcome:
+        { result: r.engine_result,
+          timestamp: '',
+          fee: r.tx_json.Fee, 
+          ledgerVersion: 0,
+          indexInLedger: 0,
+        },
+    }      
   }
 };
+

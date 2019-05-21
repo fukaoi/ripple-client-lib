@@ -3,12 +3,22 @@ const req = require("request");
 module.exports = class Address {
   constructor(ripplelib) {
     this.api = ripplelib;
-    this.INTERVAL = 1000;
+  }
+
+  async setFlags(address, settings) {
+    if (!settings) {
+      throw new Error(`settings is invalid: ${settings}`);
+    }
+    if (!this.isValidAddress(address)) {
+      throw new Error(`Validate error address: ${address}`);
+    }
+    const tx = await this.api.prepareSettings(address, settings);
+    return JSON.parse(tx.txJSON);
   }
 
   async getSequence(address) {
-    if (!address) {
-      throw new Error(`Set address is invalid: ${address}`);
+    if (!this.isValidAddress(address)) {
+      throw new Error(`Validate error address: ${address}`);
     }
     const info = await this.api.getAccountInfo(address);
     return info.sequence;
@@ -39,7 +49,6 @@ module.exports = class Address {
       });
     };
     const res = await doRequest(options);
-    this.setInterval(this.INTERVAL);
     return JSON.parse(res).account;
   }
 
@@ -54,5 +63,19 @@ module.exports = class Address {
   setInterval(waitMsec) {
     const startMsec = new Date();
     while (new Date() - startMsec < waitMsec);
+  }
+
+  async broadCast(txjson, secret) {
+    if (!txjson || !secret) {
+      throw new Error(
+        `Set params(txjson, secret) is invalid: ${txjson}, ${secret}`
+      );
+    }
+    if (!this.isValidSecret(secret)) {
+      throw new Error(`Validate error secret: ${secret}`);
+    }
+    const signedTx = await this.api.sign(JSON.stringify(txjson), secret);
+    const res = await this.api.submit(signedTx.signedTransaction);
+    return res;
   }
 };

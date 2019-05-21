@@ -22,7 +22,7 @@ module.exports = class Multisig {
   }
 
   async setupMultisig(masterAddress, signerEntries, quorum, fee) {
-    if (!quorum || quorum < 1 || !fee || fee < 0) {
+    if (!quorum || quorum < 1 || !fee) {
       throw new Error(`Set params(quorum, fee) is invalid`);
     }
 

@@ -18,7 +18,7 @@ async function main(
     const tx = p.createTransaction(amount, toAddress, tags, memos);
     const txRaw = await p.preparePayment(tx, fee);
     const signeds = await p.setupSignerSignning(txRaw.txJSON, regularKeys);
-    const res = await p.broadCast(signeds);
+    const res = await p.broadCastWithVerify(signeds, txRaw);
     console.log(JSON.stringify(res));
   } catch (e) {
     console.error(e);

@@ -29,10 +29,33 @@ test("Generate new ddress with faucet", async () => {
 test("Get seq number", async () => {
   const res = await a.newAccountTestnet();
   // Until complete when created account in rippled network
-  a.setInterval(5000);
+  a.setInterval(8000);
   const seq = await a.getSequence(res.address);
   await expect(seq).toBeGreaterThan(0);
 });
+
+test("Set flags reequires payments to destination tag", async () => {
+  const address = 'rD31mBhp9qY7gUwUCsAi38E8HJR6zBTSH5';
+  const secret = 'snPHz2vQKa1CbVihBsQc5yD1ZXn7g';
+  const flags = {requireDestinationTag: true};
+  const obj = await a.setFlags(address, flags);
+  expect(obj.SetFlag).toBe(1);
+  const res = await a.broadCast(obj, secret); 
+  expect(res.resultCode).toBe('tesSUCCESS');
+  expect(res.tx_json.SetFlag).toBe(1);
+});
+
+test("Set disable flags reequires payments to destination tag", async () => {
+  const address = 'rD31mBhp9qY7gUwUCsAi38E8HJR6zBTSH5';
+  const secret = 'snPHz2vQKa1CbVihBsQc5yD1ZXn7g';
+  const flags = {requireDestinationTag: false};
+  const obj = await a.setFlags(address, flags);
+  expect(obj.ClearFlag).toBe(1);
+  const res = await a.broadCast(obj, secret); 
+  expect(res.resultCode).toBe('tesSUCCESS');
+  expect(res.tx_json.ClearFlag).toBe(1);
+});
+
 
 test("Set invalid param getSequence()", async () => {
   await expect(a.getSequence(0)).rejects.toThrow(Error);

@@ -13,6 +13,7 @@ let masterAccount;
 beforeAll(async () => {
   await api.connect();
   masterAccount = await a.newAccountTestnet();
+  a.setInterval(5000);
 })
 
 afterAll(async () => {
@@ -61,7 +62,6 @@ test("Invalid params setupMultisig()", async () => {
   const entries = m.createSignerList(signers);
   await expect(m.setupMultisig('')).rejects.toThrow();
   await expect(m.setupMultisig('', [], 0, 0)).rejects.toThrow();
-  await expect(m.setupMultisig(masterAccount.address, entries, 2, -1)).rejects.toThrow();
   await expect(m.setupMultisig(masterAccount.address, entries, 0, 0.5)).rejects.toThrow();
   await expect(m.setupMultisig(masterAccount.address, entries, -1, 0.5)).rejects.toThrow();
 });
