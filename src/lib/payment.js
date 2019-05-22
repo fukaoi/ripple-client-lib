@@ -61,7 +61,7 @@ module.exports = class Payment {
     return await this.api.submit(signed.signedTransaction);
   }
 
-  async preparePayment(tx, fee) {
+  async preparePayment(tx, fee, signersCount) {
     if (!tx || !fee || fee < 0) {
       throw new Error(`Set params(tx, fee) is invalid: ${tx}, ${fee}`); 
     }
@@ -69,7 +69,7 @@ module.exports = class Payment {
     const instructions = {
       fee: `${fee}`, 
       sequence: seq, 
-      signersCount: Number(3),
+      signersCount: signersCount,
       maxLedgerVersionOffset: 5,
     };
     const txRaw = await this.api.preparePayment(
