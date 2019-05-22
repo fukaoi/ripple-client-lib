@@ -1,7 +1,7 @@
 {
   "name": "ripple-client-lib",
   "version": "2.0.0",
-  "description": "wrapped ripple-lib and did abstract, do convenience",
+  "description": "wrapped ripple-lib and did abstract, do convenience. security scan \nresult: https://snyk.io/test/github/fukaoi/ripple-client-lib?targetFile=package.json",
   "repository": "ripple-client-lib",
   "main": "index.js",
   "scripts": {
