@@ -28,8 +28,6 @@ test("Generate new ddress with faucet", async () => {
 
 test("Get seq number", async () => {
   const res = await a.newAccountTestnet();
-  // Until complete when created account in rippled network
-  a.setInterval(8000);
   const seq = await a.getSequence(res.address);
   await expect(seq).toBeGreaterThan(0);
 });

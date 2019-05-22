@@ -61,7 +61,7 @@ module.exports = class Payment {
     return await this.api.submit(signed.signedTransaction);
   }
 
-  async preparePayment(tx, fee) {
+  async preparePayment(tx, fee, signersCount) {
     if (!tx || !fee || fee < 0) {
       throw new Error(`Set params(tx, fee) is invalid: ${tx}, ${fee}`); 
     }
@@ -69,7 +69,7 @@ module.exports = class Payment {
     const instructions = {
       fee: `${fee}`, 
       sequence: seq, 
-      signersCount: Number(3),
+      signersCount: signersCount,
       maxLedgerVersionOffset: 5,
     };
     const txRaw = await this.api.preparePayment(
@@ -127,14 +127,13 @@ module.exports = class Payment {
   }
 
   verifyTransaction(hash, options) {
-    console.log("Verify loop");
-    return this.api.getTransaction(hash, options).then(data => {
-      return data;
+    console.count("Verify Transaction loop");
+    return this.api.getTransaction(hash, options).then(resolve => {
+      return resolve;
     }).catch(e => {
       if (e instanceof this.api.errors.PendingLedgerVersionError) {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => this.verifyTransaction(hash, options)
-            .then(resolve, reject), 1000);
+        return new Promise((_, reject) => {
+          setTimeout(() => this.verifyTransaction(hash, options).then(_, reject), 1000);
         });
       } else if (e instanceof this.api.errors.MissingLedgerHistoryError) {
         return this.convertSubmitToVerifyResponse(this.firstRes);
@@ -145,6 +144,7 @@ module.exports = class Payment {
 
   convertSubmitToVerifyResponse(r) {
     // deleted specification key(for not important)
+    // not lost fee => fee: '0'
     return { 
         type: r.tx_json.TransactionType,
         address: r.tx_json.Account,
@@ -153,7 +153,7 @@ module.exports = class Payment {
         outcome:
         { result: r.engine_result,
           timestamp: '',
-          fee: r.tx_json.Fee, 
+          fee: '0', 
           ledgerVersion: 0,
           indexInLedger: 0,
         },

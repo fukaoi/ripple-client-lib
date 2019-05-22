@@ -30,7 +30,6 @@ beforeAll(async () => {
   masterAccount = await a.newAccountTestnet();
   toAccount     = await a.newAccountTestnet();
   regularKeys   = await Define.createRegularKeys(a);
-  a.setInterval(5000);
   p = new Payment(api, masterAccount.address);
 });
 
@@ -68,7 +67,7 @@ test("Setup signning", async () => {
 
 test("Boradcast", async () => {
   const tx = p.createTransaction(amount, toAccount.address, tags, memos);
-  const txRaw = await p.preparePayment(tx, fee);
+  const txRaw = await p.preparePayment(tx, fee, regularKeys.length);
   const signed = await p.setupSignerSignning(txRaw.txJSON, regularKeys);
   const res = await p.broadCast(signed);
   expect(res.resultCode).toEqual('tefNOT_MULTI_SIGNING');
