@@ -136,13 +136,13 @@ module.exports = class Payment {
           setTimeout(() => this.verifyTransaction(hash, options).then(_, reject), 1000);
         });
       } else if (e instanceof this.api.errors.MissingLedgerHistoryError) {
-        return this.convertSubmitToVerifyResponse(this.firstRes);
+        return Payment.convertSubmitToVerifyResponse(this.firstRes);
       }
       throw new Error(e);
     });    
   }
 
-  convertSubmitToVerifyResponse(r) {
+  static convertSubmitToVerifyResponse(r) {
     // deleted specification key(for not important)
     // not lost fee => fee: '0'
     return { 
