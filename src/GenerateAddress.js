@@ -7,7 +7,7 @@ async function main(server, isTestnet) {
     await api.connect();
     const a = new Address(api);
     let account = {};
-    if (isTestnet) {
+    if (isTestnet == 'true') {
       console.log("[TESTNET ACCOUNT]");
       account = await a.newAccountTestnet();
     } else {
