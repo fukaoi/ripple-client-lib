@@ -6,17 +6,21 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --env node --detectOpenHandles",
-    "watch": "jest --watchAll --env node --detectOpenHandles"
+    "watch": "jest --watchAll --env node --detectOpenHandles",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": "fukaoi",
   "license": "ISC",
   "dependencies": {
-    "ripple-lib": "1.2.3"
+    "ripple-lib": "1.2.3",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-plugin-security": "^1.4.0",
     "jest": "^24.7.1",
     "prettier": "^1.17.0"
-  }
+  },
+  "snyk": true
 }
