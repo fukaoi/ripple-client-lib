@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "description": "wrapped ripple-lib and did abstract, do convenience. security scan \nresult: https://snyk.io/test/github/fukaoi/ripple-client-lib?targetFile=package.json",
   "repository": "ripple-client-lib",
-  "keywords": ["ripple", "ripple-lib", "client"],
+  "keywords": [
+    "ripple",
+    "ripple-lib",
+    "client"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "jest --env node --detectOpenHandles",
