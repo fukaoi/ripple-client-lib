@@ -12,3 +12,8 @@ patch:
         patched: '2019-07-03T22:58:24.411Z'
     - ripple-lib > ripple-hashes > ripple-binary-codec > lodash:
         patched: '2019-07-03T22:58:24.411Z'
+  SNYK-JS-HTTPSPROXYAGENT-469131:
+    - snyk > proxy-agent > https-proxy-agent:
+        patched: '2019-10-26T04:32:01.317Z'
+    - snyk > proxy-agent > pac-proxy-agent > https-proxy-agent:
+        patched: '2019-10-26T04:32:01.317Z'
