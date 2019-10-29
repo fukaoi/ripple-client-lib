@@ -18,7 +18,7 @@
   "author": "fukaoi",
   "license": "ISC",
   "dependencies": {
-    "ripple-lib": "1.2.3",
+    "ripple-lib": "1.4.0",
     "snyk": "^1.239.0"
   },
   "devDependencies": {
